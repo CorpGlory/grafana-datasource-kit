@@ -1,6 +1,6 @@
 {
   "name": "grafana-datasource-kit",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
     "test": "jest --config jest.config.js"
@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/CorpGlory/grafana-datasource-kit.git"
   },
-  "author": "Hastic Core Team",
+  "author": "CorpGlory Dev Team",
   "license": "",
   "bugs": {
     "url": "https://github.com/CorpGlory/grafana-datasource-kit/issues"
