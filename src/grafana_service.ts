@@ -10,10 +10,9 @@ const CHUNK_SIZE = 50000;
  * @returns [time, value][] array
  */
 export async function queryByMetric(
-  metric: GrafanaMetric, panelUrl: string, from: number, to: number, apiKey: string
+  metric: GrafanaMetric, url: string, from: number, to: number, apiKey: string
 ) {
 
-  console.log('API KEY', apiKey)
   let datasource = metric.datasource;
 
   let params = datasource.params
