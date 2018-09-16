@@ -1,6 +1,4 @@
 import { GrafanaMetric } from './grafana_metric_model';
-import { getApiKey } from '../config';
-import { URL } from 'url';
 import axios from 'axios';
 
 
@@ -12,13 +10,11 @@ const CHUNK_SIZE = 50000;
  * @returns [time, value][] array
  */
 export async function queryByMetric(
-  metric: GrafanaMetric, panelUrl: string, from: number, to: number
+  metric: GrafanaMetric, panelUrl: string, from: number, to: number, apiKey: string
 ) {
 
+  console.log('API KEY', apiKey)
   let datasource = metric.datasource;
-
-  let origin = new URL(panelUrl).origin;
-  let url = `${origin}/${datasource.url}`;
 
   let params = datasource.params
   let data = {
@@ -29,7 +25,7 @@ export async function queryByMetric(
   let chunkParams = Object.assign({}, params);
   while(true) {
     chunkParams.q = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    var chunk = await queryGrafana(url, chunkParams);
+    var chunk = await queryGrafana(url, apiKey, chunkParams);
     let values = chunk.values;
     data.values = data.values.concat(values);
     data.columns = chunk.columns;
@@ -43,9 +39,8 @@ export async function queryByMetric(
   return data;
 }
 
-async function queryGrafana(url: string, params: any) {
-  let origin = new URL(url).origin;
-  let headers = { Authorization: `Bearer ${getApiKey(origin)}` };
+async function queryGrafana(url: string, apiKey: string, params: any) {
+  let headers = { Authorization: `Bearer ${apiKey}` };
 
   try {
     var res = await axios.get(url, { params, headers });
