@@ -15,7 +15,9 @@
     "url": "https://github.com/CorpGlory/grafana-datasource-kit/issues"
   },
   "homepage": "https://github.com/CorpGlory/grafana-datasource-kit",
-  "dependencies": {},
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
   "devDependencies": {
     "@types/jest": "^23.1.1",
     "jest": "^23.1.1",
