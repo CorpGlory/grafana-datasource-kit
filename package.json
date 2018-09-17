@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "",
   "scripts": {
+    "build": "tsc",
     "test": "jest --config jest.config.js"
   },
   "repository": {
@@ -23,8 +24,8 @@
     "@types/jest": "^23.1.1",
     "jest": "^23.1.1",
     "ts-jest": "^23.1.1",
-    "ts-loader": "^4.4.1",
-    "typescript": "^2.8.3"
+    "typescript": "^2.9.2"
   },
-  "main": "index.ts"
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts"
 }
