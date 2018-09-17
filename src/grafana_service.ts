@@ -1,5 +1,6 @@
 import { GrafanaMetric } from './grafana_metric_model';
 
+import { URL } from 'url';
 import axios from 'axios';
 
 
@@ -8,15 +9,17 @@ const CHUNK_SIZE = 50000;
 
 /**
  * @param metric to query to Grafana
- * @returns [time, value][] array
+ * @returns { values: [time, value][], columns: string[] }
  */
 export async function queryByMetric(
-  metric: GrafanaMetric, url: string, from: number, to: number, apiKey: string
-) {
+  metric: GrafanaMetric, panelUrl: string, from: number, to: number, apiKey: string
+): Promise<{ values: [number, number][], columns: string[] }> {
 
   let datasource = metric.datasource;
+  let origin = new URL(panelUrl).origin;
+  let url = `${origin}/${datasource.url}`;
 
-  let params = datasource.params
+  let params = datasource.params;
   let data = {
     values: [],
     columns: []
