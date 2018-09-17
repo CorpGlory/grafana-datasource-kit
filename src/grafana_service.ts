@@ -1,4 +1,4 @@
-import { GrafanaMetric } from './grafana_metric_model';
+import { GrafanaMetric } from './metrics';
 
 import { URL } from 'url';
 import axios from 'axios';
