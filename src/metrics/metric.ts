@@ -20,14 +20,4 @@ constructor(datasource: GrafanaDatasource, targets: any[], id?: GrafanaMetricId)
 
 abstract getQuery(from: number, to: number, limit: number, offset: number): string;
 
-
-//private _metricQuery: MetricQuery = undefined;
-
-//public get metricQuery() {
-//  if(this._metricQuery === undefined) {
-//    this._metricQuery = new MetricQuery(this);
-//  }
-//  return this._metricQuery;
-//}
-
 }
