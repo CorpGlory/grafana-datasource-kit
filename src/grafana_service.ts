@@ -57,7 +57,7 @@ async function queryGrafana(url: string, apiKey: string, params: any) {
   if (res.data.results === undefined) {
     throw new Error('results field is undefined in response.');
   }
-  
+
   // TODO: support more than 1 metric (each res.data.results item is a metric)
   let results = res.data.results[0];
   if (results.series === undefined) {
