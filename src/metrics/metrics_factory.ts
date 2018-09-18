@@ -1,12 +1,12 @@
 import { InfluxdbMetric } from './influxdb_metric'
 import { GraphiteMetric } from './graphite_metric'
-import { Metric, GrafanaDatasource, GrafanaMetricId } from './metric'
+import { AbsractMetric, Datasource, MetricId } from './metric'
 
 export function metricFactory(
-  datasource: GrafanaDatasource,
+  datasource: Datasource,
   targets: any[],
-  id?: GrafanaMetricId
-  ): Metric {  
+  id?: MetricId
+  ): AbsractMetric {
 
     let class_map = {
       'influxdb': InfluxdbMetric,
@@ -16,13 +16,13 @@ export function metricFactory(
   return new class_map[datasource.type](datasource, targets)
 }
 
-export class GrafanaMetric {
-  datasource: GrafanaDatasource;
+export class Metric {
+  datasource: Datasource;
   targets: any[];
-  id?: GrafanaMetricId;
-  private _metricQuery: Metric = undefined;
+  id?: MetricId;
+  private _metricQuery: AbsractMetric = undefined;
 
-  constructor(datasource: GrafanaDatasource, targets: any[], id?: GrafanaMetricId) {
+  constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     if(datasource === undefined) {
       throw new Error('datasource is undefined');
     }
@@ -50,7 +50,7 @@ export class GrafanaMetric {
     };
   }
 
-  static fromObject(obj: any): Metric {
+  static fromObject(obj: any): AbsractMetric {
     if(obj === undefined) {
       throw new Error('obj is undefined');
     }

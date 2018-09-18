@@ -1,2 +1,2 @@
-export * from './grafana_metric_model';
+export * from './metrics';
 export * from './grafana_service';

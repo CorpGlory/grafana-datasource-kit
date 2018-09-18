@@ -1,7 +1,7 @@
-import { GrafanaMetric, GrafanaDatasource } from '../src/grafana_metric_model'
+import { Metric, Datasource } from '../src/metrics'
 
 describe('Correct InfluxDB query', function() {
-  let datasource: GrafanaDatasource = {
+  let datasource: Datasource = {
     url: 'url',
     type: 'influxdb',
     params: {
@@ -10,8 +10,9 @@ describe('Correct InfluxDB query', function() {
       epoch: ''
     }
   }
+
   let target = 'mean("value")'
-  let query = new GrafanaMetric(datasource, [target])
+  let query = new Metric(datasource, [target])
 
   it("test", function() {
       expect(query.metricQuery.getQuery(1534809600,1537488000,100,20)).toBe(
@@ -22,7 +23,7 @@ describe('Correct InfluxDB query', function() {
 })
 
 describe('correct Graphite query', function() {
-  let datasource: GrafanaDatasource = {
+  let datasource: Datasource = {
     url: 'http://example.com:1234',
     type: 'graphite',
     params: {
@@ -33,7 +34,7 @@ describe('correct Graphite query', function() {
   }
 
   let target = `target=template(hosts.$hostname.cpu, hostname="worker1")`
-  let query = new GrafanaMetric(datasource, [target])
+  let query = new Metric(datasource, [target])
 
   it("test simple query with time clause", function () {
     expect(query.metricQuery.getQuery(1534809600, 1537488000, 0, 0)).toBe(

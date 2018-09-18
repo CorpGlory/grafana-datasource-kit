@@ -1,12 +1,12 @@
-import { Metric, GrafanaDatasource, GrafanaMetricId } from "./metric";
+import { AbsractMetric, Datasource, MetricId } from "./metric";
 
-export class InfluxdbMetric extends Metric{
+export class InfluxdbMetric extends AbsractMetric{
 
   private static INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
 
   private _queryParts: string[];
 
-  constructor(datasource: GrafanaDatasource, targets: any[], id?: GrafanaMetricId) {
+  constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
 
     var queryStr = datasource.params.q;

@@ -1,8 +1,8 @@
-import { Metric, GrafanaDatasource, GrafanaMetricId  } from "./metric";
+import { AbsractMetric, Datasource, MetricId  } from "./metric";
 
-export class GraphiteMetric extends Metric {
+export class GraphiteMetric extends AbsractMetric {
 
-    constructor(datasource: GrafanaDatasource, targets: any[], id?: GrafanaMetricId) {
+    constructor(datasource: Datasource, targets: any[], id?: MetricId) {
       super(datasource, targets, id);
     }
 

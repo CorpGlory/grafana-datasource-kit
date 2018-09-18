@@ -1,2 +1,2 @@
-export { GrafanaMetric } from './metrics_factory'
-export { GrafanaDatasource } from './metric'
+export { Metric } from './metrics_factory'
+export { Datasource } from './metric'

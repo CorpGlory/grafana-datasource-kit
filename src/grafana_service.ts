@@ -1,4 +1,4 @@
-import { GrafanaMetric } from './metrics';
+import { Metric } from './metrics';
 
 import { URL } from 'url';
 import axios from 'axios';
@@ -12,7 +12,7 @@ const CHUNK_SIZE = 50000;
  * @returns { values: [time, value][], columns: string[] }
  */
 export async function queryByMetric(
-  metric: GrafanaMetric, panelUrl: string, from: number, to: number, apiKey: string
+  metric: Metric, panelUrl: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
   let datasource = metric.datasource;

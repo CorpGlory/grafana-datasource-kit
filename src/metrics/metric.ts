@@ -1,4 +1,4 @@
-export declare type GrafanaDatasource = {
+export declare type Datasource = {
   url: string;
   type: string;
   params: {
@@ -8,15 +8,15 @@ export declare type GrafanaDatasource = {
   };
 };
 
-export type GrafanaMetricId = string;
+export type MetricId = string;
 
-export abstract class Metric {
+export abstract class AbsractMetric {
 
-protected datasource: GrafanaDatasource;
+protected datasource: Datasource;
 protected targets: any[];
-protected id?: GrafanaMetricId;
+protected id?: MetricId;
 
-constructor(datasource: GrafanaDatasource, targets: any[], id?: GrafanaMetricId) {}
+constructor(datasource: Datasource, targets: any[], id?: MetricId) {}
 
 abstract getQuery(from: number, to: number, limit: number, offset: number): string;
 
