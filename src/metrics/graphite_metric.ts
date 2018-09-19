@@ -1,4 +1,4 @@
-import { AbsractMetric, Datasource, MetricId  } from "./metric";
+import { AbsractMetric, Datasource, MetricId  } from './metric';
 
 export class GraphiteMetric extends AbsractMetric {
 

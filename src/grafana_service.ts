@@ -1,4 +1,4 @@
-import { Metric } from './metrics';
+import { Metric } from './metrics/metrics_factory';
 
 import { URL } from 'url';
 import axios from 'axios';
