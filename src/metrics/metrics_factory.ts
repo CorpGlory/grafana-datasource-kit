@@ -32,6 +32,9 @@ export class Metric {
     if(targets.length === 0) {
       throw new Error('targets is empty');
     }
+    this.datasource = datasource;
+    this.targets = targets;
+    this.id = id;
   }
 
   public get metricQuery() {
