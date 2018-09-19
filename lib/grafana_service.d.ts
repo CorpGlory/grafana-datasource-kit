@@ -1,4 +1,4 @@
-import { Metric } from './metrics';
+import { Metric } from './metrics/metrics_factory';
 /**
  * @param metric to query to Grafana
  * @returns { values: [time, value][], columns: string[] }

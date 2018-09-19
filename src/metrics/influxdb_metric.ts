@@ -8,7 +8,7 @@ export class InfluxdbMetric extends AbsractMetric {
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
-
+    
     var queryStr = datasource.params.q;
     this._queryParts = queryStr.split(InfluxdbMetric.INFLUX_QUERY_TIME_REGEX);
     if(this._queryParts.length == 1) {
