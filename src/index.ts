@@ -1,2 +1,2 @@
-export * from './metrics';
-export * from './grafana_service';
+export { Metric, Datasource } from './metrics';
+export { queryByMetric } from './grafana_service';
