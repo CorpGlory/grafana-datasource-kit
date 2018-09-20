@@ -1,19 +1,21 @@
-import { InfluxdbMetric } from './influxdb_metric'
-import { GraphiteMetric } from './graphite_metric'
-import { AbsractMetric, Datasource, MetricId } from './metric'
+import { InfluxdbMetric } from './influxdb_metric';
+import { GraphiteMetric } from './graphite_metric';
+import { AbsractMetric, Datasource, MetricId } from './metric';
+import { PrometheusMetric } from './prometheus_metric';
 
 export function metricFactory(
   datasource: Datasource,
   targets: any[],
   id?: MetricId
-  ): AbsractMetric {
+): AbsractMetric {
 
-    let class_map = {
-      'influxdb': InfluxdbMetric,
-      'graphite': GraphiteMetric
-    }
+  let class_map = {
+    'influxdb': InfluxdbMetric,
+    'graphite': GraphiteMetric,
+    'prometheus': PrometheusMetric
+  };
 
-  return new class_map[datasource.type](datasource, targets)
+  return new class_map[datasource.type](datasource, targets);
 }
 
 export class Metric {
