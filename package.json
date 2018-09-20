@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "mocha": "^5.2.0",
+    "moment": "^2.22.2",
     "url": "^0.11.0"
   },
   "devDependencies": {
