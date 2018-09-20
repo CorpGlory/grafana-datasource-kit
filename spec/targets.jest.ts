@@ -1,4 +1,5 @@
-import { Metric, Datasource } from '../src/metrics'
+import { Metric } from './metrics/metrics_factory';
+import { Datasource } from './metrics/metric';
 
 describe('Correct InfluxDB query', function() {
   let datasource: Datasource = {
