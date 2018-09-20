@@ -34,7 +34,7 @@ export class GraphiteMetric extends AbsractMetric {
 
     return {
       columns: [res.data[0]['target']],
-      values: (<any[]>res.data[0]['datapoints']).map(function(point){
+      values: res.data[0].datapoints.map(point => {
         let val = point[0];
         let timestamp = point[1] * 1000; //convert seconds -> ms
         return [timestamp, val];
