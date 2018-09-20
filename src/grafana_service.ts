@@ -28,7 +28,7 @@ export async function queryByMetric(
   let chunkParams = Object.assign({}, params);
   while(true) {
     let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    var chunk;
+    let chunk;
 
     if(metric.datasource.type === 'influxdb') {
       chunkParams.q = query;

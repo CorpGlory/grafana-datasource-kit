@@ -3,7 +3,7 @@ import { GraphiteMetric } from './graphite_metric';
 import { AbsractMetric, Datasource, MetricId } from './metric';
 import { PrometheusMetric } from './prometheus_metric';
 
-export function metricFactory (
+export function metricFactory(
   datasource: Datasource,
   targets: any[],
   id?: MetricId

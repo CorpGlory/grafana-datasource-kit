@@ -12,8 +12,8 @@ export class GraphiteMetric extends AbsractMetric {
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
     let queryStr = datasource['data'];
-    this._queryParts = queryStr.split(GraphiteMetric.QUERY_TIME_REGEX);
-    this._queryParts[1] = this._queryParts[1].split(GraphiteMetric.MAX_DATA_POINTS_REGEX)[0];
+    this._queryParts = queryStr.split(QUERY_TIME_REGEX);
+    this._queryParts[1] = this._queryParts[1].split(MAX_DATA_POINTS_REGEX)[0];
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): string {
