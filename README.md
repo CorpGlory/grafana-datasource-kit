@@ -6,6 +6,7 @@ datasource via Grafana in background.
 ## Supported datasources
 
 * Influxdb
+* Graphite
 
 ## Projects based on library
 * [grafana-data-exporter](https://github.com/CorpGlory/grafana-data-exporter)
