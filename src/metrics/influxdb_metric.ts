@@ -1,8 +1,8 @@
 import { AbsractMetric, Datasource, MetricId } from "./metric";
 
-export class InfluxdbMetric extends AbsractMetric {
+let INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
 
-  private static INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
+export class InfluxdbMetric extends AbsractMetric {
 
   private _queryParts: string[];
 
@@ -10,7 +10,7 @@ export class InfluxdbMetric extends AbsractMetric {
     super(datasource, targets, id);
 
     var queryStr = datasource.params.q;
-    this._queryParts = queryStr.split(InfluxdbMetric.INFLUX_QUERY_TIME_REGEX);
+    this._queryParts = queryStr.split(INFLUX_QUERY_TIME_REGEX);
     if(this._queryParts.length == 1) {
       throw new Error(
         `Query "${queryStr}" is not replaced with LIMIT/OFFSET oeprators. Missing time clause.`

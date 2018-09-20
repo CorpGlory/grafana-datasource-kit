@@ -30,11 +30,13 @@ export async function queryByMetric(
     let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
     var chunk;
 
-    if (metric.datasource.type === 'influxdb') {
+    if(metric.datasource.type === 'influxdb') {
       chunkParams.q = query;
-      chunk = await queryGrafana(url, apiKey, chunkParams, metric);
-    } else if (metric.datasource.type === 'graphite') {
-      chunk = await queryGrafana(`${url}/${query}`, apiKey, chunkParams, metric);
+      chunk = await queryGrafana(metric, url, apiKey, chunkParams);
+    }else if(metric.datasource.type === 'graphite') {
+      chunk = await queryGrafana(metric, `${url}/${query}`, apiKey, chunkParams);
+    }else {
+      throw Error(`${metric.datasource.type} doesn't supported`);
     }
 
     let values = chunk.values;
@@ -50,7 +52,7 @@ export async function queryByMetric(
   return data;
 }
 
-async function queryGrafana(url: string, apiKey: string, params: any, metric: Metric) {
+async function queryGrafana(metric: Metric, url: string, apiKey: string, params: any) {
   let headers = { Authorization: `Bearer ${apiKey}` };
 
   try {
