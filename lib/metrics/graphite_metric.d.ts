@@ -5,4 +5,8 @@ export declare class GraphiteMetric extends AbsractMetric {
     private _queryParts;
     constructor(datasource: Datasource, targets: any[], id?: MetricId);
     getQuery(from: number, to: number, limit: number, offset: number): string;
+    getResults(res: any): {
+        columns: any[];
+        values: any[][];
+    };
 }

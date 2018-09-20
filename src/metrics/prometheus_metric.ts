@@ -9,4 +9,8 @@ export class PrometheusMetric extends AbsractMetric {
   getQuery(from: number, to: number, limit: number, offset: number): string {
     return '';
   }
+
+  getResults(res) {
+    return [];
+  }
 }

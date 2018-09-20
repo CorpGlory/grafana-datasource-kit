@@ -19,5 +19,6 @@ export abstract class AbsractMetric {
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {}
 
   abstract getQuery(from: number, to: number, limit: number, offset: number): string;
+  abstract getResults(res);
 
 }

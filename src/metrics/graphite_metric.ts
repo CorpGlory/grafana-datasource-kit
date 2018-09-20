@@ -18,12 +18,26 @@ export class GraphiteMetric extends AbsractMetric {
 
     getQuery(from: number, to: number, limit: number, offset: number): string {
 
-      let moment_format = 'h:mm:ss_YYYYMMDD';
+      let moment_format = 'h:mm_YYYYMMDD';
       let from_date = moment(from).format(moment_format);
       let to_date = moment(to).format(moment_format);
 
 
       let timeClause = `&from=${from_date}&until=${to_date}`;
-      return `/?${this._queryParts[0]}${timeClause}&${this._queryParts[1]}&maxDataPoints=${limit}`;
+      return `?${this._queryParts[0]}${timeClause}&${this._queryParts[1]}&maxDataPoints=${limit}`;
+    }
+
+    getResults(res) {
+      if (res.data[0] === undefined) {
+        throw new Error('data is undefined in response.');
+      }
+
+      return { columns: [res.data[0]['target']],
+               values: (<any[]>res.data[0]['datapoints']).map(function(point){
+                  let val = point[0];
+                  let timestamp = point[1] * 1000; //move seconds -> ms
+                  return [timestamp, val];
+                })
+              };
     }
 }

@@ -27,8 +27,16 @@ export async function queryByMetric(
 
   let chunkParams = Object.assign({}, params);
   while(true) {
-    chunkParams.q = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    var chunk = await queryGrafana(url, apiKey, chunkParams);
+    let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
+    var chunk;
+
+    if (metric.datasource.type === 'influxdb') {
+      chunkParams.q = query;
+      chunk = await queryGrafana(url, apiKey, chunkParams, metric);
+    } else if (metric.datasource.type === 'graphite') {
+      chunk = await queryGrafana(`${url}/${query}`, apiKey, chunkParams, metric);
+    }
+
     let values = chunk.values;
     data.values = data.values.concat(values);
     data.columns = chunk.columns;
@@ -42,7 +50,7 @@ export async function queryByMetric(
   return data;
 }
 
-async function queryGrafana(url: string, apiKey: string, params: any) {
+async function queryGrafana(url: string, apiKey: string, params: any, metric: Metric) {
   let headers = { Authorization: `Bearer ${apiKey}` };
 
   try {
@@ -54,15 +62,5 @@ async function queryGrafana(url: string, apiKey: string, params: any) {
     throw new Error(e.message);
   }
 
-  if (res.data.results === undefined) {
-    throw new Error('results field is undefined in response.');
-  }
-
-  // TODO: support more than 1 metric (each res.data.results item is a metric)
-  let results = res.data.results[0];
-  if (results.series === undefined) {
-    return [];
-  }
-
-  return results.series[0];
+  return metric.metricQuery.getResults(res);
 }
