@@ -33,9 +33,9 @@ export async function queryByMetric(
     if(metric.datasource.type === 'influxdb') {
       chunkParams.q = query;
       chunk = await queryGrafana(metric, url, apiKey, chunkParams);
-    }else if(metric.datasource.type === 'graphite') {
+    } else if(metric.datasource.type === 'graphite') {
       chunk = await queryGrafana(metric, `${url}/${query}`, apiKey, chunkParams);
-    }else {
+    } else {
       throw Error(`${metric.datasource.type} doesn't supported`);
     }
 

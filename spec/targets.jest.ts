@@ -38,7 +38,7 @@ describe('correct Graphite query', function() {
 
   it("test simple query with time clause", function () {
     expect(query.metricQuery.getQuery(1534809600, 1537488000, 500, 0)).toBe(
-      `?target=template(hosts.$hostname.cpu, hostname="worker1")&from=00:00_20180821&until=00:00_20180921&maxDataPoints=500`
+      `?target=template(hosts.$hostname.cpu, hostname="worker1")&from=00:00_20180821&until=00:00_20180921&maxDataPoints=500`;
     )
   })
 })
