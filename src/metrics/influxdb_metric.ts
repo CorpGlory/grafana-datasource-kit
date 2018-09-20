@@ -1,6 +1,6 @@
 import { AbsractMetric, Datasource, MetricId } from "./metric";
 
-let INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
+const INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
 
 export class InfluxdbMetric extends AbsractMetric {
 

@@ -2,8 +2,8 @@ import { AbsractMetric, Datasource, MetricId  } from './metric';
 
 import * as moment from 'moment';
 
-let QUERY_TIME_REGEX = /\&from=[^\&]*\&until=[^\&]*\&/;
-let MAX_DATA_POINTS_REGEX = /\&maxDataPoints=[^\&]+/;
+const QUERY_TIME_REGEX = /\&from=[^\&]*\&until=[^\&]*\&/;
+const MAX_DATA_POINTS_REGEX = /\&maxDataPoints=[^\&]+/;
 
 export class GraphiteMetric extends AbsractMetric {
 
