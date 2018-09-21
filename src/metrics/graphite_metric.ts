@@ -29,12 +29,12 @@ export class GraphiteMetric extends AbsractMetric {
 
   getResults(res) {
 
-    if(res.data.length < 1) {
-      console.log('datasource return empty responce, no data');
+    if(res.data !== undefined && res.data.length < 1) {
+      console.log('datasource return empty response, no data');
       return {
         columns: ['timestamp', 'target'],
         values: []
-      }
+      };
     }
 
     return {
