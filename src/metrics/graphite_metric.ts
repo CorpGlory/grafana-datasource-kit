@@ -28,12 +28,17 @@ export class GraphiteMetric extends AbsractMetric {
   }
 
   getResults(res) {
-    if(res.data[0] === undefined) {
-      throw new Error('data is undefined in response.');
+
+    if(res.data !== undefined && res.data.length < 1) {
+      console.log('datasource return empty response, no data');
+      return {
+        columns: ['timestamp', 'target'],
+        values: []
+      };
     }
 
     return {
-      columns: [res.data[0]['target']],
+      columns: ['timestamp', res.data[0]['target']],
       values: res.data[0].datapoints.map(point => {
         let val = point[0];
         let timestamp = point[1] * 1000; //convert seconds -> ms
