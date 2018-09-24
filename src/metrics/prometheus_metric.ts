@@ -25,7 +25,7 @@ export class PrometheusMetric extends AbsractMetric {
       };
     }
 
-    let metric_name;
+    let metric_name = '';
     for(let key in res.data.data.result[0].metric) {
       metric_name += `${key}=${res.data.data.result[0].metric[key]}:`;
     }
