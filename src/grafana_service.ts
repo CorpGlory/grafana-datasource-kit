@@ -35,6 +35,8 @@ export async function queryByMetric(
       chunk = await queryGrafana(metric, url, apiKey, chunkParams);
     } else if(metric.datasource.type === 'graphite') {
       chunk = await queryGrafana(metric, `${url}/${query}`, apiKey, chunkParams);
+    } else if(metric.datasource.type === 'prometheus') {
+      chunk = await queryGrafana(metric, url, apiKey, chunkParams);
     } else {
       throw Error(`${metric.datasource.type} doesn't supported`);
     }
