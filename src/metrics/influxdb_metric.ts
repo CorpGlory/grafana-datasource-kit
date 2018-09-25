@@ -1,8 +1,8 @@
-import { AbsractMetric, Datasource, MetricId } from "./metric";
+import { AbstractMetric, Datasource, MetricId } from "./metric";
 
 const INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
 
-export class InfluxdbMetric extends AbsractMetric {
+export class InfluxdbMetric extends AbstractMetric {
 
   private _queryParts: string[];
 

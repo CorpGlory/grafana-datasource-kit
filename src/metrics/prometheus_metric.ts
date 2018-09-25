@@ -1,8 +1,8 @@
-import { AbsractMetric, Datasource, MetricId } from './metric';
+import { AbstractMetric, Datasource, MetricId } from './metric';
 
 const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
-export class PrometheusMetric extends AbsractMetric {
+export class PrometheusMetric extends AbstractMetric {
 
   private _queryParts: string[];
 

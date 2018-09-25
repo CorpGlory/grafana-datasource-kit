@@ -10,7 +10,7 @@ export declare type Datasource = {
 
 export type MetricId = string;
 
-export abstract class AbsractMetric {
+export abstract class AbstractMetric {
 
   protected datasource: Datasource;
   protected targets: any[];

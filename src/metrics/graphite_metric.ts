@@ -1,11 +1,11 @@
-import { AbsractMetric, Datasource, MetricId  } from './metric';
+import { AbstractMetric, Datasource, MetricId  } from './metric';
 
 import * as moment from 'moment';
 
 const QUERY_TIME_REGEX = /\&from=[^\&]*\&until=[^\&]*\&/;
 const MAX_DATA_POINTS_REGEX = /\&maxDataPoints=[^\&]+/;
 
-export class GraphiteMetric extends AbsractMetric {
+export class GraphiteMetric extends AbstractMetric {
 
   private _queryParts: string[];
 
