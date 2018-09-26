@@ -25,14 +25,28 @@ export class PrometheusMetric extends AbsractMetric {
       };
     }
 
-    let metric_name = '';
-    for(let key in res.data.data.result[0].metric) {
-      metric_name = `${metric_name ? `${metric_name}:` : '' }${key}=${res.data.data.result[0].metric[key]}`;
+    let result_matrix = {
+      columns: ['timestamp'],
+      values: []
+    };
+
+    console.log(res.data);
+
+    Array.apply(result_matrix.columns.push, res.data.data.result.map(r => {
+      let keys = [];
+      for(let key in res.data.data.result[0].metric) {
+        keys.push(`${key}=${res.data.data.result[0].metric[key]}`);
+      }
+      return keys.join(':');
+    }));
+
+    let values = res.data.result.map(r => {return r.values});
+    console.log(values);
+    let timestamps = [];
+    for(let v of values) {
+      timestamps.push(v[0]);
     }
 
-    return {
-      columns: ['timestamp', metric_name],
-      values: res.data.data.result[0].values
-    };
+    return result_matrix;
   }
 }
