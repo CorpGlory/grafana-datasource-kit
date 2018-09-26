@@ -17,7 +17,8 @@ export class PrometheusMetric extends AbstractMetric {
   }
 
   getResults(res) {
-    if(res.data === undefined || res.data.result.length < 1) {
+    
+    if(res.data === undefined || res.data.data.result.length < 1) {
       console.log('datasource return empty response, no data');
       return {
         columns: ['timestamp', 'target'],
@@ -25,27 +26,37 @@ export class PrometheusMetric extends AbstractMetric {
       };
     }
 
+    let result = res.data.data.result;
     let result_matrix = {
       columns: ['timestamp'],
       values: []
     };
 
-    console.log(res.data);
-
-    Array.apply(result_matrix.columns.push, res.data.data.result.map(r => {
+    result.map(r => {
       let keys = [];
-      for(let key in res.data.data.result[0].metric) {
-        keys.push(`${key}=${res.data.data.result[0].metric[key]}`);
+      for(let key in r.metric) {
+        keys.push(`${key}=${r.metric[key]}`);
       }
-      return keys.join(':');
-    }));
+      result_matrix.columns.push(keys.join(':'));
+    });
 
-    let values = res.data.result.map(r => {return r.values});
-    console.log(values);
+    let values = result.map(r => {return r.values});
+
     let timestamps = [];
     for(let v of values) {
       timestamps.push(v[0]);
     }
+
+    timestamps = timestamps.filter(function(item, i, ar) { 
+      return ar.indexOf(item) === i;
+    });
+
+    timestamps.map(t => {
+      values.map(v => {
+
+      });
+      result_matrix.values.push();
+    });
 
     return result_matrix;
   }
