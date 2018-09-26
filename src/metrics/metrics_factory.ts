@@ -58,11 +58,11 @@ export class Metric {
     };
   }
 
-  static fromObject(obj: any): AbstractMetric {
+  static fromObject(obj: any): Metric {
     if(obj === undefined) {
       throw new Error('obj is undefined');
     }
-    return metricFactory(
+    return new this(
       obj.datasource,
       obj.targets,
       obj._id
