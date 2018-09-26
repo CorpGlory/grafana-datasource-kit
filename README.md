@@ -1,8 +1,8 @@
 # grafana-datasource-kit
 Node.js library for running Grafana datasources on backend plus utils.
-You can send your datasource metric from Grafana to compilte it on Node.js and query your datasource via Grafana in background.
+You can send your datasource metric from Grafana to compile it on Node.js and query your datasource via Grafana in background.
 
-User get unified interface, library provide same output format for each datasource, such as fields order, time units.
+User gets unified interface, library provides same output format for each datasource, such as fields order, time units.
 
 ## Supported datasources
 
@@ -10,7 +10,7 @@ User get unified interface, library provide same output format for each datasour
 * Graphite
 * Prometheus
 
-Please white us a letter if you want your datasource be supported: ping@corpglory.com 
+Please write us a letter if you want your datasource to be supported: ping@corpglory.com 
 
 ## Projects based on library
 * [grafana-data-exporter](https://github.com/CorpGlory/grafana-data-exporter)
