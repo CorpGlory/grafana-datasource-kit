@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --config jest.config.js"
   },
   "repository": {
