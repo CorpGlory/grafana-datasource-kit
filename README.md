@@ -8,6 +8,9 @@ User get unified interface, library provide same output format for each datasour
 
 * Influxdb
 * Graphite
+* Prometheus
+
+Please white us a letter if you want your datasource be supported: ping@corpglory.com 
 
 ## Projects based on library
 * [grafana-data-exporter](https://github.com/CorpGlory/grafana-data-exporter)
