@@ -27,7 +27,7 @@ export class InfluxdbMetric extends AbsractMetric {
   }
 
   getResults(res) {
-    if(res.data === undefined || res.data.length < 1) {
+    if(res.data === undefined || res.data.results.length < 1) {
       console.log('datasource return empty response, no data');
       return {
         columns: ['timestamp', 'target'],
