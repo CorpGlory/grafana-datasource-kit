@@ -38,7 +38,7 @@ export async function queryByMetric(
     } else if(metric.datasource.type === 'prometheus') {
       chunk = await queryGrafana(metric, url, apiKey, chunkParams);
     } else {
-      throw Error(`${metric.datasource.type} doesn't supported`);
+      throw Error(`${metric.datasource.type} isn't supported`);
     }
 
     let values = chunk.values;

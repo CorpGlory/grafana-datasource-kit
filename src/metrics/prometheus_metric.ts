@@ -1,8 +1,8 @@
-import { AbsractMetric, Datasource, MetricId } from './metric';
+import { AbstractMetric, Datasource, MetricId } from './metric';
 
 const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
-export class PrometheusMetric extends AbsractMetric {
+export class PrometheusMetric extends AbstractMetric {
 
   private _queryParts: string[];
 
@@ -17,7 +17,7 @@ export class PrometheusMetric extends AbsractMetric {
   }
 
   getResults(res) {
-    if(res.data === undefined || res.data.length < 1) {
+    if(res.data === undefined || res.data.result.length < 1) {
       console.log('datasource return empty response, no data');
       return {
         columns: ['timestamp', 'target'],

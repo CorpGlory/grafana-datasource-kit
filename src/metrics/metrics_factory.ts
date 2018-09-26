@@ -1,13 +1,13 @@
 import { InfluxdbMetric } from './influxdb_metric';
 import { GraphiteMetric } from './graphite_metric';
-import { AbsractMetric, Datasource, MetricId } from './metric';
+import { AbstractMetric, Datasource, MetricId } from './metric';
 import { PrometheusMetric } from './prometheus_metric';
 
 export function metricFactory(
   datasource: Datasource,
   targets: any[],
   id?: MetricId
-): AbsractMetric {
+): AbstractMetric {
 
   let class_map = {
     'influxdb': InfluxdbMetric,
@@ -25,7 +25,7 @@ export class Metric {
   datasource: Datasource;
   targets: any[];
   id?: MetricId;
-  private _metricQuery: AbsractMetric = undefined;
+  private _metricQuery: AbstractMetric = undefined;
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     if(datasource === undefined) {
@@ -58,7 +58,7 @@ export class Metric {
     };
   }
 
-  static fromObject(obj: any): AbsractMetric {
+  static fromObject(obj: any): AbstractMetric {
     if(obj === undefined) {
       throw new Error('obj is undefined');
     }
