@@ -27,8 +27,12 @@ export class InfluxdbMetric extends AbstractMetric {
   }
 
   getResults(res) {
-    if (res.data.results === undefined) {
-      throw new Error('results field is undefined in response.');
+    if(res.data === undefined || res.data.results.length < 1) {
+      console.log('datasource return empty response, no data');
+      return {
+        columns: ['timestamp', 'target'],
+        values: []
+      };
     }
 
     // TODO: support more than 1 metric (each res.data.results item is a metric)
