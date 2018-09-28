@@ -54,12 +54,15 @@ export class PrometheusMetric extends AbstractMetric {
     let values_gen = values.map(v => { return function* () {
       let i = 0;
       yield v[i++];
-    }});
+    }}).map(f => {
+      return f();
+    });
     let current_values = values_gen.map(v => { return v.next(); });
 
     for(let t of timestamps) {
       let row = [t];
       current_values.map(c => {
+        console.log(c);
         if(c[0] === t) {
           row.push(c[1]);
           c = values_gen.next();
