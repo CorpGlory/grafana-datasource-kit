@@ -40,39 +40,34 @@ export class PrometheusMetric extends AbstractMetric {
       result_matrix.columns.push(keys.join(':'));
     });
 
-    let values = result.map(r => {return r.values});
+    let values = result.map(r => r.values);
 
     let timestamps = [];
-    for(let v of values) {
-      timestamps.push(v[0]);
-    }
-
+    values.map(v => v.map(row => timestamps.push(row[0])));
     timestamps = timestamps.filter(function(item, i, ar) { 
-      return ar.indexOf(item) === i;
+      return ar.indexOf(item) === i; //uniq values
     });
-
-    let values_gen = values.map(v => { return function* () {
-      let i = 0;
-      yield v[i++];
-    }}).map(f => {
-      return f();
-    });
-    let current_values = values_gen.map(v => { return v.next(); });
 
     for(let t of timestamps) {
       let row = [t];
-      current_values.map(c => {
-        console.log(c);
-        if(c[0] === t) {
-          row.push(c[1]);
-          c = values_gen.next();
-        } else {
+      values.map(v => {
+        if(v[0] === undefined) {
+          row.push('');
+        }
+
+        let currentTimestamp = v[0][0];
+        let currentValue = v[0][1];
+
+        if(currentTimestamp === t) {
+          row.push(currentValue);
+          v.shift();
+        }
+        else {
           row.push('');
         }
       });
-
       result_matrix.values.push(row);
-    }
+    };
 
     return result_matrix;
   }
