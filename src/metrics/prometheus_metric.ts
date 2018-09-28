@@ -52,7 +52,7 @@ export class PrometheusMetric extends AbstractMetric {
       let row = [t];
       values.map(v => {
         if(v[0] === undefined) {
-          row.push('');
+          row.push(0);
         }
 
         let currentTimestamp = v[0][0];
