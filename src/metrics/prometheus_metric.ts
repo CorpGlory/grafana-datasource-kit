@@ -51,12 +51,25 @@ export class PrometheusMetric extends AbstractMetric {
       return ar.indexOf(item) === i;
     });
 
-    timestamps.map(t => {
-      values.map(v => {
+    let values_gen = values.map(v => { return function* () {
+      let i = 0;
+      yield v[i++];
+    }});
+    let current_values = values_gen.map(v => { return v.next(); });
 
+    for(let t of timestamps) {
+      let row = [t];
+      current_values.map(c => {
+        if(c[0] === t) {
+          row.push(c[1]);
+          c = values_gen.next();
+        } else {
+          row.push('');
+        }
       });
-      result_matrix.values.push();
-    });
+
+      result_matrix.values.push(row);
+    }
 
     return result_matrix;
   }
