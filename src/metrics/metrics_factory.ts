@@ -14,10 +14,10 @@ export function metricFactory(
     'graphite': GraphiteMetric,
     'prometheus': PrometheusMetric
   };
-  try {
-    return new class_map[datasource.type](datasource, targets);
-  } catch(e) {
+  if(class_map[datasource.type] === undefined) {
     throw new Error(`Datasources of type ${datasource.type} are not supported currently`);
+  } else {
+    return new class_map[datasource.type](datasource, targets);
   }
 }
 
