@@ -61,7 +61,7 @@ async function queryGrafana(metric: Metric, url: string, apiKey: string, params:
     var res = await axios.get(url, { params, headers });
   } catch (e) {
     if(e.response.status === 401) {
-      throw new Error('Unauthorized. Check the $HASTIC_API_KEY.');
+      throw new Error('Unauthorized. Check the API_KEY.');
     }
     throw new Error(e.message);
   }
