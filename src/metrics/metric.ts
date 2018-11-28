@@ -8,6 +8,12 @@ export declare type Datasource = {
   };
 };
 
+export type MetricQuery = {
+  url: string;
+  method: string;
+  schema: {};
+}
+
 export type MetricId = string;
 
 export abstract class AbstractMetric {
@@ -18,7 +24,7 @@ export abstract class AbstractMetric {
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {}
 
-  abstract getQuery(from: number, to: number, limit: number, offset: number);
+  abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
   abstract getResults(res);
 
 }

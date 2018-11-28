@@ -1,4 +1,4 @@
-import { AbstractMetric, Datasource, MetricId } from "./metric";
+import { AbstractMetric, Datasource, MetricId, MetricQuery } from "./metric";
 
 const INFLUX_QUERY_TIME_REGEX = /time >[^A-Z]+/;
 
@@ -21,9 +21,20 @@ export class InfluxdbMetric extends AbstractMetric {
     }
   }
 
-  getQuery(from: number, to: number, limit: number, offset: number): string {
+  getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let timeClause = `time >= ${from}ms AND time <= ${to}ms`;
-    return `${this._queryParts[0]} ${timeClause} ${this._queryParts[1]} LIMIT ${limit} OFFSET ${offset}`;
+    let q = `${this._queryParts[0]} ${timeClause} ${this._queryParts[1]} LIMIT ${limit} OFFSET ${offset}`;
+    return {
+      url: this.datasource.url,
+      method: 'GET',
+      schema: {
+        params: {
+          q,
+          db: this.datasource.params.db,
+          epoch: this.datasource.params.epoch
+        }
+      }
+    }
   }
 
   getResults(res) {

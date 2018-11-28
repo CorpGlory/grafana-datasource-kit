@@ -1,4 +1,5 @@
 import { Metric } from './metrics/metrics_factory';
+import { MetricQuery } from './metrics/metric';
 
 import { URL } from 'url';
 import axios from 'axios';
@@ -16,12 +17,7 @@ export async function queryByMetric(
   metric: Metric, panelUrl: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
-  let datasource = metric.datasource;
-  let type = datasource.type;
   let origin = new URL(panelUrl).origin;
-  let url = `${origin}/${datasource.url}`;
-
-  let params = datasource.params;
   let data = {
     values: [],
     columns: []
@@ -29,23 +25,8 @@ export async function queryByMetric(
 
   while(true) {
     let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    let res;
-
-    if(type === 'influxdb') {
-      let chunkParams = Object.assign({}, params);
-      chunkParams.q = query;
-      res = await queryGrafana({url, params: chunkParams}, apiKey);
-    } else if(type === 'graphite') {
-      res = await queryGrafana({url: `${url}/${query}`, params}, apiKey);
-    } else if(type === 'prometheus') {
-      res = await queryGrafana({url, params}, apiKey);
-    } else if(type === 'postgres') {
-      console.log(query);
-      res = await queryGrafana({url, data: query}, apiKey, 'POST');
-    } else {
-      throw Error(`${type} isn't supported`);
-    }
-
+    query.url = `${origin}/${query.url}`;
+    let res = await queryGrafana(query, apiKey);
     let chunk = metric.metricQuery.getResults(res);
     let values = chunk.values;
     data.values = data.values.concat(values);
@@ -60,19 +41,20 @@ export async function queryByMetric(
   return data;
 }
 
-async function queryGrafana(params: {}, apiKey: string, method='GET') {
+async function queryGrafana(query: MetricQuery, apiKey: string) {
   let headers = { Authorization: `Bearer ${apiKey}` };
-  let query = {
-    method,
-    headers
+  let axios_query = {
+    headers,
+    url: query.url,
+    method: query.method,
   };
 
-  _.forOwn(params, (val,key) => {
-    query[key] = val;
+  _.forOwn(query.schema, (val,key) => {
+    axios_query[key] = val;
   });
 
   try {
-    var res = await axios(query);
+    var res = await axios(axios_query);
     console.log(res.data);
   } catch (e) {
     console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);

@@ -1,4 +1,4 @@
-import { AbstractMetric, Datasource, MetricId  } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery  } from './metric';
 
 import * as moment from 'moment';
 
@@ -16,7 +16,7 @@ export class GraphiteMetric extends AbstractMetric {
     this._queryParts[1] = this._queryParts[1].split(MAX_DATA_POINTS_REGEX)[0];
   }
 
-  getQuery(from: number, to: number, limit: number, offset: number): string {
+  getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
 
     let moment_format = 'h:mm_YYYYMMDD';
     let from_date = moment(from).format(moment_format);
@@ -24,7 +24,14 @@ export class GraphiteMetric extends AbstractMetric {
 
 
     let timeClause = `&from=${from_date}&until=${to_date}`;
-    return `?${this._queryParts[0]}${timeClause}&${this._queryParts[1]}&maxDataPoints=${limit}`;
+    let q = `?${this._queryParts[0]}${timeClause}&${this._queryParts[1]}&maxDataPoints=${limit}`;
+    return {
+      url: `${this.datasource.url}/${q}`,
+      method: 'GET',
+      schema: {
+        params: this.datasource.params
+      }
+    }
   }
 
   getResults(res) {

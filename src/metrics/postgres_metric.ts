@@ -1,19 +1,21 @@
-import { AbstractMetric, Datasource, MetricId } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 
 export class PostgresMetric extends AbstractMetric {
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
-    console.log(datasource);
-    console.log(this.datasource);
   }
 
-  getQuery(from: number, to: number, limit: number, offset: number) {
+  getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     return {
-      data: {
-        from: `${from}`,
-        to: `${to}`,
-        queries: this.datasource['data']['queries']
+      url: this.datasource.url,
+      method: 'POST',
+      schema: {
+        data: {
+          from: `${from}`,
+          to: `${to}`,
+          queries: this.datasource['data']['queries']
+        }
       }
     };
   }

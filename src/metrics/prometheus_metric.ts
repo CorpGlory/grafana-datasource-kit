@@ -1,4 +1,4 @@
-import { AbstractMetric, Datasource, MetricId } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 
 const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
@@ -12,8 +12,15 @@ export class PrometheusMetric extends AbstractMetric {
     this._queryParts = datasource.type.split(QUERY_TIME_REGEX);
   }
 
-  getQuery(from: number, to: number, limit: number, offset: number): string {
-    return `${this._queryParts[0]}&start=${from}&end=${to}&${this._queryParts[1]}`;
+  getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
+    let q = `${this._queryParts[0]}&start=${from}&end=${to}&${this._queryParts[1]}`;
+    return {
+      url: this.datasource.url,
+      method: 'GET',
+      schema: {
+        params: this.datasource.params
+      }
+    }
   }
 
   getResults(res) {
