@@ -1,7 +1,9 @@
 import { Metric } from './metrics/metrics_factory';
+import { MetricQuery } from './metrics/metric';
 
 import { URL } from 'url';
 import axios from 'axios';
+import * as _ from 'lodash';
 
 
 const CHUNK_SIZE = 50000;
@@ -15,32 +17,17 @@ export async function queryByMetric(
   metric: Metric, panelUrl: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
-  let datasource = metric.datasource;
   let origin = new URL(panelUrl).origin;
-  let url = `${origin}/${datasource.url}`;
-
-  let params = datasource.params;
   let data = {
     values: [],
     columns: []
   };
 
-  let chunkParams = Object.assign({}, params);
   while(true) {
     let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    let chunk;
-
-    if(metric.datasource.type === 'influxdb') {
-      chunkParams.q = query;
-      chunk = await queryGrafana(metric, url, apiKey, chunkParams);
-    } else if(metric.datasource.type === 'graphite') {
-      chunk = await queryGrafana(metric, `${url}/${query}`, apiKey, chunkParams);
-    } else if(metric.datasource.type === 'prometheus') {
-      chunk = await queryGrafana(metric, url, apiKey, chunkParams);
-    } else {
-      throw Error(`${metric.datasource.type} isn't supported`);
-    }
-
+    query.url = `${origin}/${query.url}`;
+    let res = await queryGrafana(query, apiKey);
+    let chunk = metric.metricQuery.getResults(res);
     let values = chunk.values;
     data.values = data.values.concat(values);
     data.columns = chunk.columns;
@@ -54,17 +41,25 @@ export async function queryByMetric(
   return data;
 }
 
-async function queryGrafana(metric: Metric, url: string, apiKey: string, params: any) {
+async function queryGrafana(query: MetricQuery, apiKey: string) {
   let headers = { Authorization: `Bearer ${apiKey}` };
+  let axiosQuery = {
+    headers,
+    url: query.url,
+    method: query.method,
+  };
+
+  _.defaults(axiosQuery, query.schema);
 
   try {
-    var res = await axios.get(url, { params, headers });
+    var res = await axios(axiosQuery);
   } catch (e) {
+    console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
     if(e.response.status === 401) {
       throw new Error('Unauthorized. Check the API_KEY.');
     }
     throw new Error(e.message);
   }
 
-  return metric.metricQuery.getResults(res);
+  return res;
 }
