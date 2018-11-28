@@ -2,9 +2,8 @@ import { Metric } from './metrics/metrics_factory';
 import { MetricQuery } from './metrics/metric';
 
 import { URL } from 'url';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import * as _ from 'lodash';
-import Axios from 'axios';
 
 
 const CHUNK_SIZE = 50000;
