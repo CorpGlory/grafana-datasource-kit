@@ -1,19 +1,24 @@
 import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 
 import * as _ from 'lodash';
+
 export class PostgresMetric extends AbstractMetric {
 
   private _targetName; //save first target name, while multi metric not implemented
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
+
+    if(targets.length === 0) {
+      throw Error('got empty targets list');
+    }
     this._targetName = targets[0].refId;
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let queries = this.datasource['data']['queries'];
-    _.forEach(queries, (q) => {
-        q.rawSql = this.processLimitOffset(q.rawSql, limit, offset);
+    _.forEach(queries, q => {
+      q.rawSql = this.processLimitOffset(q.rawSql, limit, offset);
     });
     return {
       url: this.datasource.url,

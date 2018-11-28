@@ -2,8 +2,9 @@ import { Metric } from './metrics/metrics_factory';
 import { MetricQuery } from './metrics/metric';
 
 import { URL } from 'url';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import * as _ from 'lodash';
+import Axios from 'axios';
 
 
 const CHUNK_SIZE = 50000;
@@ -49,9 +50,7 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
     method: query.method,
   };
 
-  _.forOwn(query.schema, (val,key) => {
-    axios_query[key] = val;
-  });
+  _.defaults(axios_query, query.schema);
 
   try {
     var res = await axios(axios_query);

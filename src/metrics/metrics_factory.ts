@@ -10,16 +10,16 @@ export function metricFactory(
   id?: MetricId
 ): AbstractMetric {
 
-  let class_map = {
+  let classMap = {
     'influxdb': InfluxdbMetric,
     'graphite': GraphiteMetric,
     'prometheus': PrometheusMetric,
     'postgres': PostgresMetric
   };
-  if(class_map[datasource.type] === undefined) {
+  if(classMap[datasource.type] === undefined) {
     throw new Error(`Datasources of type ${datasource.type} are not supported currently`);
   } else {
-    return new class_map[datasource.type](datasource, targets, id);
+    return new classMap[datasource.type](datasource, targets, id);
   }
 }
 

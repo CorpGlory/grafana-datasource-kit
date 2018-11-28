@@ -11,7 +11,7 @@ export declare type Datasource = {
 export type MetricQuery = {
   url: string;
   method: string;
-  schema: {};
+  schema: any;
 }
 
 export type MetricId = string;
