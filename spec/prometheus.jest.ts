@@ -14,7 +14,6 @@ describe('Test Prometheus time range processing', function() {
     let from = 1234567891234; //milliseconds
     let to   = 1234567899999;
     let query = prometheus.getQuery(from, to, 1000, 0);
-    console.log(query.url);
     expect(query.url.indexOf(`start=${Math.floor(from / 1000)}`) !== -1).toBeTruthy();
     expect(query.url.indexOf(`end=${Math.floor(to / 1000)}`) !== -1).toBeTruthy();
   });
