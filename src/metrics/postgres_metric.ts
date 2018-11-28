@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 export class PostgresMetric extends AbstractMetric {
 
-  private _targetName; //save first target name, while multi metric not implemented
+  private _targetName: string; //save first target name, while multi metric not implemented
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
@@ -46,7 +46,7 @@ export class PostgresMetric extends AbstractMetric {
     let results = res.data.results[this._targetName];
     if (results.series === undefined) {
       return [];
-      }
+    }
 
     let points = results.series[0].points;
     points.map(p => p.reverse());
@@ -71,7 +71,7 @@ export class PostgresMetric extends AbstractMetric {
     if(reoff.test(query)) {
       res = res.replace(/offset [0-9]+/ig, `offset ${offset}`);
     } else {
-      res = res + ` offset ${offset}`;
+      res += ` offset ${offset}`;
     }
 
     return res;
