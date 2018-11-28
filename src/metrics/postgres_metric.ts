@@ -66,7 +66,7 @@ export class PostgresMetric extends AbstractMetric {
     if(reoff.test(query)) {
       res = res.replace(/offset [0-9]+/ig, `offset ${offset}`);
     } else {
-      res = res + ` offset ${offset}`;
+      res += ` offset ${offset}`;
     }
 
     return res;
