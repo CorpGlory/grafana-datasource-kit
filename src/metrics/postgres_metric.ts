@@ -1,5 +1,6 @@
 import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 
+import * as _ from 'lodash';
 export class PostgresMetric extends AbstractMetric {
 
   private _targetName; //save first target name, while multi metric not implemented
@@ -10,6 +11,10 @@ export class PostgresMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
+    let queries = this.datasource['data']['queries'];
+    _.forEach(queries, (q) => {
+        q.rawSql = this.processLimitOffset(q.rawSql, limit, offset);
+    });
     return {
       url: this.datasource.url,
       method: 'POST',
@@ -17,7 +22,7 @@ export class PostgresMetric extends AbstractMetric {
         data: {
           from: `${from}`,
           to: `${to}`,
-          queries: this.datasource['data']['queries']
+          queries: queries
         }
       }
     };
@@ -45,5 +50,25 @@ export class PostgresMetric extends AbstractMetric {
       columns: ['timestamp', results.series[0].name],
       values: points
     };
+  }
+
+  processLimitOffset(query: string, limit: number, offset: number): string {
+    let res;
+    let relim = RegExp(/limit/ig);
+    let reoff = RegExp(/offset/ig);
+
+    if(relim.test(query)) {
+      res = query.replace(/limit [0-9]+/ig, `limit ${limit}`);
+    } else {
+      res = query + ` limit ${limit}`;
+    }
+
+    if(reoff.test(query)) {
+      res = res.replace(/offset [0-9]+/ig, `offset ${offset}`);
+    } else {
+      res = res + ` offset ${offset}`;
+    }
+
+    return res;
   }
 }
