@@ -3,7 +3,7 @@ import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 import * as _ from 'lodash';
 export class PostgresMetric extends AbstractMetric {
 
-  private _targetName; //save first target name, while multi metric not implemented
+  private _targetName: string; //save first target name, while multi metric not implemented
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
