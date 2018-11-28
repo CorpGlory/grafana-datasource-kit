@@ -41,7 +41,7 @@ export class PostgresMetric extends AbstractMetric {
     let results = res.data.results[this._targetName];
     if (results.series === undefined) {
       return [];
-      }
+    }
 
     let points = results.series[0].points;
     points.map(p => p.reverse());
