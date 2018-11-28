@@ -1,4 +1,4 @@
-import { AbstractMetric, Datasource, MetricId } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 
 const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
@@ -8,13 +8,20 @@ export class PrometheusMetric extends AbstractMetric {
     super(datasource, targets, id);
   }
 
-  getQuery(from: number, to: number, limit: number, offset: number): string {
-    console.log('ft', from, to);
+  getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let url = this.datasource.url;
-    url.replace(/\&start=[^\&]+/, `&start=${from}`);
-    url.replace(/\&end=[^\&]+/, `&end=${to}`);
+    from = Math.floor(from/1000); //prometheus uses seconds for timestamp
+    to = Math.floor(to/1000);
 
-    return url;
+    url = url.replace(/\&start=[^\&]+/, `&start=${from}`);
+    url = url.replace(/\&end=[^\&]+/, `&end=${to}`);
+    return {
+      url,
+      method: 'GET',
+      schema: {
+        params: this.datasource.params
+      }
+    }
   }
 
   getResults(res) {
@@ -48,7 +55,6 @@ export class PrometheusMetric extends AbstractMetric {
     timestamps = timestamps.filter(function(item, i, ar) { 
       return ar.indexOf(item) === i; //uniq values
     });
-    console.log(timestamps);
 
     for(let t of timestamps) {
       let row = [t];
