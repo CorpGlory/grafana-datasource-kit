@@ -17,10 +17,10 @@ export class GraphiteMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
+
     let moment_format = 'h:mm_YYYYMMDD';
     let from_date = moment(from).format(moment_format);
     let to_date = moment(to).format(moment_format);
-
 
     let timeClause = `&from=${from_date}&until=${to_date}`;
     let q = `?${this._queryParts[0]}${timeClause}&${this._queryParts[1]}&maxDataPoints=${limit}`;
