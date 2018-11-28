@@ -2,6 +2,7 @@ import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
 
 import * as _ from 'lodash';
 
+
 export class PostgresMetric extends AbstractMetric {
 
   private _targetName: string; //save first target name, while multi metric not implemented
