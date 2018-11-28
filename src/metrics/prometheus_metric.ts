@@ -4,16 +4,17 @@ const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
 export class PrometheusMetric extends AbstractMetric {
 
-  private _queryParts: string[];
-
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
-
-    this._queryParts = datasource.type.split(QUERY_TIME_REGEX);
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): string {
-    return `${this._queryParts[0]}&start=${from}&end=${to}&${this._queryParts[1]}`;
+    console.log('ft', from, to);
+    let url = this.datasource.url;
+    url.replace(/\&start=[^\&]+/, `&start=${from}`);
+    url.replace(/\&end=[^\&]+/, `&end=${to}`);
+
+    return url;
   }
 
   getResults(res) {
@@ -47,6 +48,7 @@ export class PrometheusMetric extends AbstractMetric {
     timestamps = timestamps.filter(function(item, i, ar) { 
       return ar.indexOf(item) === i; //uniq values
     });
+    console.log(timestamps);
 
     for(let t of timestamps) {
       let row = [t];
