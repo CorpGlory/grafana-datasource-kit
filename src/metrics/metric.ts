@@ -6,6 +6,9 @@ export declare type Datasource = {
     q: string;
     epoch: string;
   };
+  data?: {
+    queries
+  }
 };
 
 export type MetricQuery = {
