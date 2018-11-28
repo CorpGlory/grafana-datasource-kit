@@ -26,8 +26,8 @@ export class PostgresMetric extends AbstractMetric {
       method: 'POST',
       schema: {
         data: {
-          from: `${from}`,
-          to: `${to}`,
+          from: String(from),
+          to: String(to),
           queries: queries
         }
       }
@@ -50,7 +50,7 @@ export class PostgresMetric extends AbstractMetric {
     }
 
     let points = results.series[0].points;
-    points.map(p => p.reverse());
+    points.forEach(p => p.reverse());
 
     return {
       columns: ['timestamp', results.series[0].name],

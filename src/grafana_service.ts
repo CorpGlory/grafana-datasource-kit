@@ -43,16 +43,16 @@ export async function queryByMetric(
 
 async function queryGrafana(query: MetricQuery, apiKey: string) {
   let headers = { Authorization: `Bearer ${apiKey}` };
-  let axios_query = {
+  let axiosQuery = {
     headers,
     url: query.url,
     method: query.method,
   };
 
-  _.defaults(axios_query, query.schema);
+  _.defaults(axiosQuery, query.schema);
 
   try {
-    var res = await axios(axios_query);
+    var res = await axios(axiosQuery);
   } catch (e) {
     console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
     if(e.response.status === 401) {
