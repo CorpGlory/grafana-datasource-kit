@@ -19,7 +19,7 @@ export function metricFactory(
   if(class_map[datasource.type] === undefined) {
     throw new Error(`Datasources of type ${datasource.type} are not supported currently`);
   } else {
-    return new class_map[datasource.type](datasource, targets);
+    return new class_map[datasource.type](datasource, targets, id);
   }
 }
 

@@ -18,11 +18,11 @@ export type MetricId = string;
 
 export abstract class AbstractMetric {
 
-  protected datasource: Datasource;
-  protected targets: any[];
-  protected id?: MetricId;
-
-  constructor(datasource: Datasource, targets: any[], id?: MetricId) {}
+  constructor(
+    public datasource: Datasource,
+    public targets: any[],
+    public id?: MetricId
+  ) {};
 
   abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
   abstract getResults(res);

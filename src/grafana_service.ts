@@ -55,7 +55,6 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
 
   try {
     var res = await axios(axios_query);
-    console.log(res.data);
   } catch (e) {
     console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
     if(e.response.status === 401) {
