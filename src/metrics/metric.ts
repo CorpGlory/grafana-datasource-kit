@@ -1,7 +1,7 @@
 export declare type Datasource = {
   url: string;
   type: string;
-  params: {
+  params?: {
     db: string;
     q: string;
     epoch: string;

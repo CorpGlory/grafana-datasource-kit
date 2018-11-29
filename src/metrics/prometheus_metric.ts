@@ -4,18 +4,19 @@ const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
 export class PrometheusMetric extends AbstractMetric {
 
-  private _queryParts: string[];
-
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
-
-    this._queryParts = datasource.type.split(QUERY_TIME_REGEX);
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
-    let q = `${this._queryParts[0]}&start=${from}&end=${to}&${this._queryParts[1]}`;
+    let url = this.datasource.url;
+    from = Math.floor(from / 1000); // prometheus uses seconds for timestamp
+    to = Math.floor(to / 1000);
+
+    url = url.replace(/\&start=[^\&]+/, `&start=${from}`);
+    url = url.replace(/\&end=[^\&]+/, `&end=${to}`);
     return {
-      url: this.datasource.url,
+      url,
       method: 'GET',
       schema: {
         params: this.datasource.params
