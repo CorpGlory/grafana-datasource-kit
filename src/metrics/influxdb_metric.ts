@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults } from "./metric";
 import { processSQLLimitOffset } from './utils';
-=======
-import { AbstractMetric, Datasource, MetricId, MetricQuery } from "./metric";
->>>>>>> 34ee46c801a0675422b6238ec8171a28807db2ce
 
 const INFLUX_QUERY_TIME_REGEX = /time ?[><=]+ ?[^A-Z]+(AND ?time ?[><=]+ ?[^A-Z]+)?/;
 
@@ -28,12 +24,8 @@ export class InfluxdbMetric extends AbstractMetric {
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let timeClause = `time >= ${from}ms AND time <= ${to}ms`;
-<<<<<<< HEAD
     let q = `${this._queryParts[0]} ${timeClause} ${this._queryParts[2]}`;
     q = processSQLLimitOffset(q, limit, offset);
-=======
-    let q = `${this._queryParts[0]} ${timeClause} ${this._queryParts[1]} LIMIT ${limit} OFFSET ${offset}`;
->>>>>>> 34ee46c801a0675422b6238ec8171a28807db2ce
     return {
       url: this.datasource.url,
       method: 'GET',
