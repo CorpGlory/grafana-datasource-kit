@@ -1,4 +1,4 @@
-import { AbstractMetric, Datasource, MetricId, MetricQuery  } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults  } from './metric';
 
 import * as moment from 'moment';
 
@@ -11,7 +11,7 @@ export class GraphiteMetric extends AbstractMetric {
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
-    let queryStr = datasource['data'];
+    let queryStr = datasource.data;
     this._queryParts = queryStr.split(QUERY_TIME_REGEX);
     this._queryParts[1] = this._queryParts[1].split(MAX_DATA_POINTS_REGEX)[0];
   }
@@ -33,7 +33,7 @@ export class GraphiteMetric extends AbstractMetric {
     }
   }
 
-  getResults(res) {
+  getResults(res): MetricResults {
 
     if(res.data === undefined || res.data.length < 1) {
       console.log('datasource return empty response, no data');

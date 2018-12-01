@@ -1,4 +1,5 @@
-import { AbstractMetric, Datasource, MetricId, MetricQuery } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults } from './metric';
+import { processSQLLimitOffset } from './utils';
 
 import * as _ from 'lodash';
 
@@ -19,7 +20,7 @@ export class PostgresMetric extends AbstractMetric {
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let queries = this.datasource.data.queries;
     _.forEach(queries, q => {
-      q.rawSql = this.processLimitOffset(q.rawSql, limit, offset);
+      q.rawSql = processSQLLimitOffset(q.rawSql, limit, offset);
     });
     return {
       url: this.datasource.url,
@@ -34,19 +35,21 @@ export class PostgresMetric extends AbstractMetric {
     };
   }
 
-  getResults(res) {
+  getResults(res): MetricResults {
+    let emptyResult = {
+      columns: ['timestamp', 'target'],
+      values: []
+    };
+
     if(res.data === undefined || res.data.results.length < 1) {
       console.log('datasource return empty response, no data');
-      return {
-        columns: ['timestamp', 'target'],
-        values: []
-      };
+      return emptyResult;
     }
 
     // TODO: support more than 1 metric (each res.data.results item is a metric)
     let results = res.data.results[this._targetName];
     if (results.series === undefined) {
-      return [];
+      return emptyResult;
     }
 
     let points = results.series[0].points;
@@ -56,25 +59,5 @@ export class PostgresMetric extends AbstractMetric {
       columns: ['timestamp', results.series[0].name],
       values: points
     };
-  }
-
-  processLimitOffset(query: string, limit: number, offset: number): string {
-    let res;
-    let relim = RegExp(/limit/ig);
-    let reoff = RegExp(/offset/ig);
-
-    if(relim.test(query)) {
-      res = query.replace(/limit [0-9]+/ig, `limit ${limit}`);
-    } else {
-      res = query + ` limit ${limit}`;
-    }
-
-    if(reoff.test(query)) {
-      res = res.replace(/offset [0-9]+/ig, `offset ${offset}`);
-    } else {
-      res += ` offset ${offset}`;
-    }
-
-    return res;
   }
 }

@@ -31,6 +31,6 @@ export abstract class AbstractMetric {
   ) {};
 
   abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
-  abstract getResults(res);
+  abstract getResults(res): MetricResults;
 
 }
