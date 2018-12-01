@@ -1,7 +1,7 @@
 export declare type Datasource = {
   url: string;
   type: string;
-  params: {
+  params?: {
     db: string;
     q: string;
     epoch: string;
@@ -15,6 +15,11 @@ export type MetricQuery = {
   schema: any;
 }
 
+export type MetricResults = {
+  values: any;
+  columns: any;
+}
+
 export type MetricId = string;
 
 export abstract class AbstractMetric {
@@ -26,6 +31,6 @@ export abstract class AbstractMetric {
   ) {};
 
   abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
-  abstract getResults(res);
+  abstract getResults(res): MetricResults;
 
 }
