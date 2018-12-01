@@ -15,6 +15,11 @@ export type MetricQuery = {
   schema: any;
 }
 
+export type MetricResults = {
+  values: any;
+  columns: any;
+}
+
 export type MetricId = string;
 
 export abstract class AbstractMetric {
