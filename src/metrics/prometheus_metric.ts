@@ -10,8 +10,13 @@ export class PrometheusMetric extends AbstractMetric {
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let url = this.datasource.url;
+<<<<<<< HEAD
     from = Math.floor(from/1000); //prometheus uses seconds for timestamp
     to = Math.floor(to/1000);
+=======
+    from = Math.floor(from / 1000); // prometheus uses seconds for timestamp
+    to = Math.floor(to / 1000);
+>>>>>>> 34ee46c801a0675422b6238ec8171a28807db2ce
 
     url = url.replace(/\&start=[^\&]+/, `&start=${from}`);
     url = url.replace(/\&end=[^\&]+/, `&end=${to}`);

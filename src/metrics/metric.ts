@@ -15,11 +15,14 @@ export type MetricQuery = {
   schema: any;
 }
 
+<<<<<<< HEAD
 export type MetricResults = {
   values: any;
   columns: any;
 }
 
+=======
+>>>>>>> 34ee46c801a0675422b6238ec8171a28807db2ce
 export type MetricId = string;
 
 export abstract class AbstractMetric {
@@ -31,6 +34,10 @@ export abstract class AbstractMetric {
   ) {};
 
   abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
+<<<<<<< HEAD
   abstract getResults(res): MetricResults;
+=======
+  abstract getResults(res);
+>>>>>>> 34ee46c801a0675422b6238ec8171a28807db2ce
 
 }
