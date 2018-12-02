@@ -30,7 +30,7 @@ export function processSQLLimitOffset(sql: string, limit: number, offset: number
   return sql;
 }
 
-function ensureParentheses(regex: RegExp, str: string): {index: number, length: number} {
+function ensureParentheses(regex: RegExp, str: string): { index: number, length: number } {
   let occurence: RegExpExecArray;
   while((occurence = regex.exec(str)) !== null) {
     let parts = [str.slice(0, occurence.index), str.slice(occurence.index + occurence[0].length)];
