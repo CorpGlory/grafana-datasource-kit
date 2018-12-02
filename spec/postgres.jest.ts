@@ -71,6 +71,10 @@ describe('Test sql processing', function() {
   let from = 1542983750857;
   let to = 1542984313292;
 
+  let check = function(original: string, expected: string) {
+    checkExpectation(original, expected, from, to, limit, offset);
+  }
+
   it('simple sql with one select', function() {
     let original = `SELECT
     \"time\" AS \"time\",
@@ -82,25 +86,61 @@ describe('Test sql processing', function() {
       val
     FROM local
     ORDER BY 1 LIMIT ${limit} OFFSET ${offset}`;
-    let metric = getMetricWithSql(original);
-    expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
+    check(original, expected);
   });
 
-  it('sql with xxx offset limit', function() {
+  it('sql with order by rows', function() {
+    let original = `SELECT
+    $__time(time),
+    AVG(power) OVER(ORDER BY speed ROWS BETWEEN 150 PRECEDING AND CURRENT ROW)
+  FROM
+    wind_pwr_spd
+  WHERE
+    $__timeFilter(time)`;
+    let expected = `SELECT
+    $__time(time),
+    AVG(power) OVER(ORDER BY speed ROWS BETWEEN 150 PRECEDING AND CURRENT ROW)
+  FROM
+    wind_pwr_spd
+  WHERE
+    $__timeFilter(time) LIMIT ${limit} OFFSET ${offset}`;
+    check(original,expected);
+  });
+
+  it('sql with offset limit', function() {
     let original = `WITH RECURSIVE t(n) AS (
       VALUES (1)
       UNION ALL
       SELECT n+1 FROM t WHERE n < 100
      )
-     SELECT sum(n) FROM t;) OFFSET xxx LIMIT xxx;`;
+     SELECT sum(n) FROM t OFFSET 0 LIMIT 0;`;
+
+
     let expected = `WITH RECURSIVE t(n) AS (
       VALUES (1)
       UNION ALL
       SELECT n+1 FROM t WHERE n < 100
-      )
-     SELECT sum(n) FROM t;) OFFSET ${offset} LIMIT ${limit};`
-    let metric = getMetricWithSql(original);
-    expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
+     )
+     SELECT sum(n) FROM t OFFSET ${offset} LIMIT ${limit};`;
+    check(original, expected);
+  });
+
+  it('sql with macroses', function() {
+    let original = `SELECT
+      time
+    FROM metric_values
+    WHERE time > $__timeFrom()
+      OR time < $__timeFrom()
+      OR 1 < $__unixEpochFrom()
+      OR $__unixEpochTo() > 1 ORDER BY 1`;
+    let expected = `SELECT
+      time
+    FROM metric_values
+    WHERE time > $__timeFrom()
+      OR time < $__timeFrom()
+      OR 1 < $__unixEpochFrom()
+      OR $__unixEpochTo() > 1 ORDER BY 1 LIMIT ${limit} OFFSET ${offset}`;
+    check(original, expected);
   });
   
   it('complex sql with one select', function() {
@@ -132,8 +172,7 @@ describe('Test sql processing', function() {
     AND statistics.value != 'ERR'
     AND statistics.value !='???'
     AND $__timeFilter(statistics.created_at) LIMIT ${limit} OFFSET ${offset}`;
-    let metric = getMetricWithSql(original);
-    expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
+    check(original, expected);
   })
 
   it('sql with number of nested select', function() {
@@ -170,11 +209,15 @@ describe('Test sql processing', function() {
       SUM(amount) AS product_sales
      FROM orders
      WHERE region IN (SELECT region FROM top_regions)
-     GROUP BY region, product LIMIT ${limit} OFFSET ${offset};`;
-    let metric = getMetricWithSql(original);
-    expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
+     GROUP BY region, product OFFSET ${offset} LIMIT ${limit};`;
+     check(original, expected);
   });
 });
+
+function checkExpectation(original: string, expected: string, from: number, to: number, limit: number, offset: number) {
+  let metric = getMetricWithSql(original);
+  expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
+}
 
 function getMetricWithSql(sql: string): PostgresMetric {
   let metric = getDefaultMetric();
