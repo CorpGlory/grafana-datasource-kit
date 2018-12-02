@@ -1,15 +1,15 @@
-export function processSQLLimitOffset(query: string, limit: number, offset: number): string {
+export function processSQLLimitOffset(sql: string, limit: number, offset: number): string {
   let res;
   let relim = RegExp(/limit/ig);
   let reoff = RegExp(/offset/ig);
 
-  if(relim.test(query)) {
-    res = query.replace(/limit [0-9]+/ig, `LIMIT ${limit}`);
+  if(relim.test(sql)) {
+    res = sql.replace(/limit [0-9]+/ig, `LIMIT ${limit}`);
   } else {
-    res = query + ` LIMIT ${limit}`;
+    res = sql + ` LIMIT ${limit}`;
   }
 
-  if(reoff.test(query)) {
+  if(reoff.test(sql)) {
     res = res.replace(/offset [0-9]+/ig, `OFFSET ${offset}`);
   } else {
     res += ` OFFSET ${offset}`;
