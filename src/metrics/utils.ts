@@ -36,7 +36,7 @@ function ensureParentheses(regex: RegExp, str: string): {index: number, length: 
     let parts = [str.slice(0, occurence.index), str.slice(occurence.index + occurence[0].length)];
     let pairing = parts.map(p => (p.match(/\(/g) || []).length === (p.match(/\)/g) || []).length);
     if(pairing.every(i => i === true)) {
-      return {index: occurence.index, length: occurence[0].length };
+      return { index: occurence.index, length: occurence[0].length };
     }
   }
   return {index: -1, length: 0};
