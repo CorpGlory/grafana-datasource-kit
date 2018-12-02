@@ -5,7 +5,7 @@ export function processSQLLimitOffset(sql: string, limit: number, offset: number
   if(splits.length > 1 && splits[1] !== '' ) {
     throw Error('multiple metrics currently not supported');
   }
-  sql = splits[0]; // remove ; from EOL
+  sql = splits[0]; // removes ";" from EOL
 
   let relim = /limit [0-9]+/ig;
   let reoff = /offset [0-9]+/ig;
@@ -30,7 +30,7 @@ export function processSQLLimitOffset(sql: string, limit: number, offset: number
   return sql;
 }
 
-function ensureParentheses(regex: RegExp, str: string): {index: number, length: number} {
+function ensureParentheses(regex: RegExp, str: string): { index: number, length: number } {
   let occurence: RegExpExecArray;
   while((occurence = regex.exec(str)) !== null) {
     let leftPart = str.slice(0, occurence.index)
@@ -43,5 +43,5 @@ function ensureParentheses(regex: RegExp, str: string): {index: number, length: 
       return {index: occurence.index, length: occurence[0].length };
     }
   }
-  return {index: -1, length: 0};
+  return { index: -1, length: 0 };
 }
