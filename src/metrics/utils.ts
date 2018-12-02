@@ -39,5 +39,5 @@ function ensureParentheses(regex: RegExp, str: string): {index: number, length: 
       return { index: occurence.index, length: occurence[0].length };
     }
   }
-  return {index: -1, length: 0};
+  return { index: -1, length: 0 };
 }
