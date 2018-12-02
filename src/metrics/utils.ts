@@ -5,7 +5,7 @@ export function processSQLLimitOffset(sql: string, limit: number, offset: number
   if(splits.length > 1 && splits[1] !== '' ) {
     throw Error('multiple metrics currently not supported');
   }
-  sql = splits[0]; // remove ; from EOL
+  sql = splits[0]; // removes ";" from EOL
 
   let relim = /limit [0-9]+/ig;
   let reoff = /offset [0-9]+/ig;
