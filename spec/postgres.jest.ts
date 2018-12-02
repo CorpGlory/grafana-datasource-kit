@@ -214,7 +214,7 @@ describe('Test sql processing', function() {
   });
 });
 
-function checkExpectation(original: string, expected: string, from, to, limit, offset) {
+function checkExpectation(original: string, expected: string, from: number, to: number, limit: number, offset: number) {
   let metric = getMetricWithSql(original);
   expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
 }
