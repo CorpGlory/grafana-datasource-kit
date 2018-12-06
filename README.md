@@ -9,6 +9,7 @@ User gets unified interface, library provides same output format for each dataso
 * Influxdb
 * Graphite
 * Prometheus
+* PostgreSQL / TimescaleDB
 
 Please write us a letter if you want your datasource to be supported: ping@corpglory.com 
 
