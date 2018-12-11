@@ -1,4 +1,7 @@
 # grafana-datasource-kit
+
+![master head status](https://travis-ci.org/CorpGlory/grafana-datasource-kit.svg?branch=master)
+
 Node.js library for running Grafana datasources on backend plus utils.
 You can send your datasource metric from Grafana to compile it on Node.js and query your datasource via Grafana in background.
 
