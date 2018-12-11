@@ -2,8 +2,10 @@ import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults  } fro
 
 import * as moment from 'moment';
 
+
 const QUERY_TIME_REGEX = /\&from=[^\&]*\&until=[^\&]*\&/;
 const MAX_DATA_POINTS_REGEX = /\&maxDataPoints=[^\&]+/;
+
 
 export class GraphiteMetric extends AbstractMetric {
 

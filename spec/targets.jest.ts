@@ -2,6 +2,7 @@ import { Datasource, Metric } from '../src/index';
 
 import 'jest';
 
+
 describe('Correct InfluxDB query', function() {
   let datasource: Datasource = {
     url: 'url',

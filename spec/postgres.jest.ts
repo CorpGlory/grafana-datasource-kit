@@ -4,6 +4,7 @@ import { MetricQuery } from '../src/metrics/metric';
 import 'jest';
 import * as _ from 'lodash';
 
+
 describe('Test query creation', function() {
 
   let limit = 1000;
@@ -142,7 +143,7 @@ describe('Test sql processing', function() {
       OR $__unixEpochTo() > 1 ORDER BY 1 LIMIT ${limit} OFFSET ${offset}`;
     check(original, expected);
   });
-  
+
   it('complex sql with one select', function() {
     let original = `SELECT
     statistics.created_at as time,

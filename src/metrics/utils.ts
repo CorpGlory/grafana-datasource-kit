@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 
+
 export function processSQLLimitOffset(sql: string, limit: number, offset: number): string {
   let splits = sql.split(';');
   if(splits.length > 1 && splits[1] !== '' ) {
@@ -40,7 +41,7 @@ function ensureParentheses(regex: RegExp, str: string): { index: number, length:
     let rightPairing = (rightPart.match(/\(/g) || []).length === (rightPart.match(/\)/g) || []).length;
 
     if(leftPairing && rightPairing) {
-      return {index: occurence.index, length: occurence[0].length };
+      return { index: occurence.index, length: occurence[0].length };
     }
   }
   return { index: -1, length: 0 };
