@@ -1,7 +1,9 @@
 import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults } from "./metric";
 import { processSQLLimitOffset } from './utils';
 
+
 const INFLUX_QUERY_TIME_REGEX = /time ?[><=]+ ?[^A-Z]+(AND ?time ?[><=]+ ?[^A-Z]+)?/;
+
 
 export class InfluxdbMetric extends AbstractMetric {
 

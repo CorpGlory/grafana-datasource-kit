@@ -23,14 +23,11 @@ export type MetricResults = {
 export type MetricId = string;
 
 export abstract class AbstractMetric {
-
   constructor(
     public datasource: Datasource,
     public targets: any[],
     public id?: MetricId
   ) {};
-
   abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
   abstract getResults(res): MetricResults;
-
 }

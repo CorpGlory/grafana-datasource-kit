@@ -2,6 +2,7 @@ import { PrometheusMetric } from '../src/metrics/prometheus_metric';
 
 import 'jest';
 
+
 describe('Test Prometheus time range processing', function() {
   let datasource = {
     type: 'prometheus',
@@ -9,7 +10,7 @@ describe('Test Prometheus time range processing', function() {
   }
   let targets = [];
   let prometheus = new PrometheusMetric(datasource, targets);
-  
+
   it('check that from/to present in url', function() {
     let from = 1234567891234; //milliseconds
     let to   = 1234567899999;

@@ -4,6 +4,7 @@ import { MetricQuery } from '../src/metrics/metric';
 import 'jest';
 import * as _ from 'lodash';
 
+
 describe('Test query creation', function() {
 
   let limit = 1000;
@@ -107,19 +108,21 @@ describe('Test sql processing', function() {
     check(original,expected);
   });
 
-  it('sql with xxx offset limit', function() {
+  it('sql with offset limit', function() {
     let original = `WITH RECURSIVE t(n) AS (
       VALUES (1)
       UNION ALL
       SELECT n+1 FROM t WHERE n < 100
      )
-     SELECT sum(n) FROM t;) OFFSET xxx LIMIT xxx;`;
+     SELECT sum(n) FROM t OFFSET 0 LIMIT 0;`;
+
+
     let expected = `WITH RECURSIVE t(n) AS (
       VALUES (1)
       UNION ALL
       SELECT n+1 FROM t WHERE n < 100
-      )
-     SELECT sum(n) FROM t;) OFFSET ${offset} LIMIT ${limit};`
+     )
+     SELECT sum(n) FROM t OFFSET ${offset} LIMIT ${limit};`;
     check(original, expected);
   });
 
@@ -137,10 +140,10 @@ describe('Test sql processing', function() {
     WHERE time > $__timeFrom()
       OR time < $__timeFrom()
       OR 1 < $__unixEpochFrom()
-      OR $__unixEpochTo() > 1 ORDER BY 1`;
+      OR $__unixEpochTo() > 1 ORDER BY 1 LIMIT ${limit} OFFSET ${offset}`;
     check(original, expected);
   });
-  
+
   it('complex sql with one select', function() {
     let original = `SELECT
     statistics.created_at as time,
@@ -207,12 +210,12 @@ describe('Test sql processing', function() {
       SUM(amount) AS product_sales
      FROM orders
      WHERE region IN (SELECT region FROM top_regions)
-     GROUP BY region, product LIMIT ${limit} OFFSET ${offset};`;
+     GROUP BY region, product OFFSET ${offset} LIMIT ${limit};`;
      check(original, expected);
   });
 });
 
-function checkExpectation(original: string, expected: string, from, to, limit, offset) {
+function checkExpectation(original: string, expected: string, from: number, to: number, limit: number, offset: number) {
   let metric = getMetricWithSql(original);
   expect(metric.getQuery(from, to, limit, offset).schema.data.queries[0].rawSql).toBe(expected);
 }

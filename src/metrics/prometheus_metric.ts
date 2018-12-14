@@ -1,5 +1,6 @@
 import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults } from './metric';
 
+
 const QUERY_TIME_REGEX = /\&start=[^\&]*\&end=[^\&]*\&/;
 
 export class PrometheusMetric extends AbstractMetric {
@@ -25,7 +26,7 @@ export class PrometheusMetric extends AbstractMetric {
   }
 
   getResults(res): MetricResults {
-    
+
     if(res.data === undefined || res.data.data.result.length < 1) {
       console.log('datasource return empty response, no data');
       return {
@@ -52,7 +53,7 @@ export class PrometheusMetric extends AbstractMetric {
 
     let timestamps = [];
     values.map(v => v.map(row => timestamps.push(row[0])));
-    timestamps = timestamps.filter(function(item, i, ar) { 
+    timestamps = timestamps.filter(function(item, i, ar) {
       return ar.indexOf(item) === i; //uniq values
     });
 

@@ -4,6 +4,7 @@ import { AbstractMetric, Datasource, MetricId } from './metric';
 import { PrometheusMetric } from './prometheus_metric';
 import { PostgresMetric } from './postgres_metric';
 
+
 export function metricFactory(
   datasource: Datasource,
   targets: any[],
