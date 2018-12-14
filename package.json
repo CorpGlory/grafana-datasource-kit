@@ -12,6 +12,9 @@
     "url": "git+https://github.com/CorpGlory/grafana-datasource-kit.git"
   },
   "author": "CorpGlory Dev Team",
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "",
   "bugs": {
     "url": "https://github.com/CorpGlory/grafana-datasource-kit/issues"

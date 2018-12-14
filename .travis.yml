@@ -1,9 +1,16 @@
 language: node_js
 node_js:
-  - "8"
+- '8'
 before_script:
-  - npm install
+- npm install
 script:
-  - npm test
+- npm test
+deploy:
+  provider: npm
+  email: ping@corpglory.com
+  api_key:
+    secure: HsITYUMaIe/qIeQiykcAcf1QfXXkdwEIoaRR2aik8MsXixuRHlEu2rJ1ut8fvwyAGU6ZOXv/slJRJhv4nYCqGEQ1qzRO4ZDAV9XJelTSwvQoCsC0vG/7HIKNN3P0yFmOQddcACTWcX5FdIm+TbFtINCXIGBGkViokicOtil8vlSox2kSyBSHueqcG9nzE2i67dQkTgetO2tTIB7fyrF2Sa5LDZlz+J41K/fXPtfoQRoPtB5aBugSZXXyMSGxaAnifJMHAu6ZW+BxVAGr29AQx2wHbv2FOdZD1VnlNxiQjkdueLhQQggRfHcX4UqmY6UajvVjQDOcqmvD0YlkXfqRbv6eMJMjVqJqBV+uCOOjH5OOH1x/Ab9xlgxHsPCClcgy2QJPrMW0IiCqh5C6DDIFzo+jE69adMc6izmyLijlqDy2j1LfdyV83c9X2NPozFpuH53wN5Joaf9dkBzWVO28ZFOzX84X85ixX2IQcjwUHf5dMYUB5NZRr/x3+VkZsy8f7NfvTDuBLmKxHu5GNaDpbSD3nMPju1WhoSSCrhyKwfkOSEnEniCGB8gT7fzL8jd1qHmSdOGwV+rD0zPxxx6DuWDbvRUi2J8UGC7deDcKNlYw1QHcbrbrSAdvgj09haCVgt2F7zWbXfKVCiJIuxfwJyKIGWzEwASnbqIBf0uDPLE=
+  on:
+    tags: true
 notifications:
   email: false
