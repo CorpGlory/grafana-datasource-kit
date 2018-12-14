@@ -40,24 +40,3 @@ describe('Correct InfluxDB query', function() {
   });
 
 })
-
-describe('correct Graphite query', function() {
-  let datasource: Datasource = {
-    url: 'http://example.com:1234',
-    type: 'graphite',
-    params: {
-      db: '',
-      q: '',
-      epoch: ''
-    }
-  };
-
-  let target = `target=template(hosts.$hostname.cpu, hostname="worker1")`;
-  let query = new Metric(datasource, [target]);
-
-  it("test simple query with time clause", function () {
-    expect(query.metricQuery.getQuery(1534809600, 1537488000, 500, 0).url).toBe(
-      `${datasource.url}?target=${target}&from=00:00_20180821&until=00:00_20180921&maxDataPoints=500`
-    )
-  });
-})
