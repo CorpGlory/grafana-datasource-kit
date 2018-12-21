@@ -1,5 +1,6 @@
 import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults  } from './metric';
 
+import * as _ from 'lodash';
 import * as moment from 'moment';
 
 
@@ -21,9 +22,21 @@ export class GraphiteMetric extends AbstractMetric {
     let limitRegex = /maxDataPoints=[^\&]+/i;
 
     let query: string = this.datasource.data;
-    query = query.replace(fromRegex, `from=${from_date}`);
-    query = query.replace(untilRegex, `until=${to_date}`);
-    query = query.replace(limitRegex, `maxDataPoints=${limit}`);
+    let replacements: [RegExp, string][] = [
+      [fromRegex, `from=${from_date}`],
+      [untilRegex, `until=${to_date}`],
+      [limitRegex, `maxDataPoints=${limit}`]
+    ];
+
+    _.each(replacements, r => {
+      let k = r[0];
+      let v = r[1];
+      if(query.search(k)) {
+        query = query.replace(k, v);
+      } else {
+        query += v;
+      }
+    });
 
     return {
       url: `${this.datasource.url}?${query}`,

@@ -11,7 +11,7 @@ describe('correct Graphite query', function() {
       q: '',
       epoch: ''
     },
-    data: 'target=target=template(hosts.$hostname.cpu, hostname=\"worker1\")&from=00:00_20180821&until=00:00_20180921&maxDataPoints=500'
+    data: 'target=target=template(hosts.$hostname.cpu, hostname=\"worker1\")&from=00:00_00000000&until=00:00_00000000&maxDataPoints=000'
   };
 
   let target = `target=template(hosts.$hostname.cpu, hostname="worker1")`;
