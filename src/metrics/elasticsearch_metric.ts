@@ -30,9 +30,15 @@ export class ElasticsearchMetric extends AbstractMetric {
     }
 
     let aggrgs = res.data.responses[0].aggregations;
-    let aggrgAgg = _.keys(aggrgs)[0];
+    let aggrgAgg = this.targets[0].bucketAggs.filter(a => !a.fake)[0].id;
     let responseValues = aggrgs[aggrgAgg].buckets;
-    let agg = '3'; //test
+    let agg = this.targets[0].metrics.filter(m => !m.hide).map(m => m.id);
+
+    if(agg.length > 1) {
+      throw Error(`multiple series for metric are not supported currently: ${JSON.stringify(agg)}`);
+    }
+
+    agg = agg[0];
 
     try {
       return {
