@@ -9,11 +9,22 @@ export class ElasticsearchMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
+    let data = this.datasource.data.split('\n').map(d => d !== ''? JSON.parse(d) : d);
+
+    data[1].size = limit;
+    data[1].from = offset;
+
+    let range = data[1].query.bool.filter.filter(f => _.has(f, 'range'))[0].range;
+    range['@timestamp'].gte = from.toString();
+    range['@timestamp'].lte = to.toString();
+    data = data.map(d => JSON.stringify(d)).join('\n');
+    console.log(JSON.stringify(data));
+
     return {
       url: this.datasource.url,
       method: 'POST',
       schema: {
-        data: this.datasource.data
+        data: data
       }
     }
   }  
