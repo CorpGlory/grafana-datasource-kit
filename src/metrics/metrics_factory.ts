@@ -3,6 +3,7 @@ import { GraphiteMetric } from './graphite_metric';
 import { AbstractMetric, Datasource, MetricId } from './metric';
 import { PrometheusMetric } from './prometheus_metric';
 import { PostgresMetric } from './postgres_metric';
+import { ElasticsearchMetric } from './elasticsearch_metric';
 
 
 export function metricFactory(
@@ -15,9 +16,11 @@ export function metricFactory(
     'influxdb': InfluxdbMetric,
     'graphite': GraphiteMetric,
     'prometheus': PrometheusMetric,
-    'postgres': PostgresMetric
+    'postgres': PostgresMetric,
+    'elasticsearch': ElasticsearchMetric
   };
   if(classMap[datasource.type] === undefined) {
+    console.error(`Datasources of type ${datasource.type} are not supported currently`);
     throw new Error(`Datasources of type ${datasource.type} are not supported currently`);
   } else {
     return new classMap[datasource.type](datasource, targets, id);

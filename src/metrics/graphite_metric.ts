@@ -5,9 +5,6 @@ import * as moment from 'moment';
 
 
 export class GraphiteMetric extends AbstractMetric {
-
-  private _queryParts: string[];
-
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
   }
