@@ -9,12 +9,20 @@ export class ElasticsearchMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
-    let data = this.datasource.data.split('\n').map(d => d !== '' ? JSON.parse(d) : d);
+    let data = this.datasource.data.split('\n').map(d => d === '' ? d: JSON.parse(d));
+
+    if(data.length === 0) {
+      throw new Error('Datasource data is empty');
+    }
 
     data[1].size = limit;
     data[1].from = offset;
 
-    let range = data[1].query.bool.filter.filter(f => _.has(f, 'range'))[0].range;
+    let filters = data[1].query.bool.filter.filter(f => _.has(f, 'range'));
+    if(filters.length === 0) {
+      throw new Error('Empty filters');
+    }
+    let range = filters[0].range;
     range['@timestamp'].gte = from.toString();
     range['@timestamp'].lte = to.toString();
     data = data.map(d => JSON.stringify(d)).join('\n');
@@ -22,21 +30,18 @@ export class ElasticsearchMetric extends AbstractMetric {
     return {
       url: this.datasource.url,
       method: 'POST',
-      schema: {
-        data: data
-      }
+      schema: { data }
     }
   }  
 
   getResults(res): MetricResults {
-    let emptyResult = {
-      columns: ['timestamp', 'target'],
-      values: []
-    };
 
     if(res.data === undefined || res.data.responses.length < 1) {
       console.log('datasource return empty response, no data');
-      return emptyResult;
+      return {
+        columns: ['timestamp', 'target'],
+        values: []
+      };;
     }
 
     let aggregations = res.data.responses[0].aggregations;
@@ -50,15 +55,11 @@ export class ElasticsearchMetric extends AbstractMetric {
 
     agg = agg[0];
 
-    try {
-      return {
-        columns: ['timestamp', 'target'],
-        values: responseValues.map(r => [r.key, _.has(r, agg)? r[agg].value: null])
-      };
-    } catch(e) {
-      console.error(`Got error while parsing result: ${e.message}`);
-      throw e;
-    }
+    return {
+      columns: ['timestamp', 'target'],
+      values: responseValues.map(r => [r.key, _.has(r, agg) ? r[agg].value: null])
+    };
+    
   }
 }
 
