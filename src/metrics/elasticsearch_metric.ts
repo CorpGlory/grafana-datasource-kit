@@ -39,9 +39,9 @@ export class ElasticsearchMetric extends AbstractMetric {
       return emptyResult;
     }
 
-    let aggrgs = res.data.responses[0].aggregations;
+    let aggregations = res.data.responses[0].aggregations;
     let aggrgAgg = this.targets[0].bucketAggs.filter(a => !a.fake)[0].id;
-    let responseValues = aggrgs[aggrgAgg].buckets;
+    let responseValues = aggregations[aggrgAgg].buckets;
     let agg = this.targets[0].metrics.filter(m => !m.hide).map(m => m.id);
 
     if(agg.length > 1) {
