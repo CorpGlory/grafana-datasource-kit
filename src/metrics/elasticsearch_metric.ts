@@ -15,6 +15,8 @@ export class ElasticsearchMetric extends AbstractMetric {
       throw new Error('Datasource data is empty');
     }
 
+    data[1].size = 0;
+
     let filters = data[1].query.bool.filter.filter(f => _.has(f, 'range'));
     if(filters.length === 0) {
       throw new Error('Empty filters');
