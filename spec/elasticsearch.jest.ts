@@ -113,7 +113,7 @@ describe('simple query', function(){
     "index": "metricbeat-*"
   },
   {
-    "size": 222,
+    "size": 0,
     "query": {
       "bool": {
         "filter": [
@@ -160,25 +160,95 @@ describe('simple query', function(){
           }
         }
       }
-    },
-    "from": 333
-  }];
-
-  let expectedQuery = {
-    url: datasourse.url,
-    method: 'POST',
-    schema: {
-      data: queryTemplate.map(e => JSON.stringify(e)).join('\n')
     }
-  };
+  }];
 
   let elasticMetric = new ElasticsearchMetric(datasourse, targets);
 
   it('check correct time processing', function() {
+    let expectedQuery = {
+      url: datasourse.url,
+      method: 'POST',
+      schema: {
+        data: queryTemplate.map(e => JSON.stringify(e)).join('\n')
+      }
+    };
+
     let from = 0;
     let to = 1;
     let limit = 222;
     let offset = 333;
+
     expect(elasticMetric.getQuery(from, to, limit, offset)).toEqual(expectedQuery);
+  });
+
+
+  let result = {
+    "data": {
+      "responses": [
+        {
+          "took": 39,
+          "timed_out": false,
+          "_shards": {
+            "total": 37,
+            "successful": 37,
+            "failed": 0
+          },
+          "hits": {
+            "total": 63127,
+            "max_score": 0.0,
+            "hits": []
+          },
+          "aggregations": {
+            "2": {
+              "buckets": [
+                {
+                  "key_as_string": "1545934140000",
+                  "key": 1545934140000,
+                  "doc_count": 118,
+                  "1": {
+                    "value": 8.640455022375E9
+                  }
+                },
+                {
+                  "key_as_string": "1545934200000",
+                  "key": 1545934200000,
+                  "doc_count": 178,
+                  "1": {
+                    "value": 8.641446309833334E9
+                  },
+                  "3": {
+                    "value": 991287.4583339691
+                  }
+                },
+                {
+                  "key_as_string": "1545934260000",
+                  "key": 1545934260000,
+                  "doc_count": 177,
+                  "1": {
+                    "value": 8.642345302333334E9
+                  },
+                  "3": {
+                    "value": 898992.5
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  };
+
+  it('check results parsing', function() {
+    let expectedResult = {
+      columns: ['timestamp', 'target'],
+      values: [[1545934140000, null],
+               [1545934200000, 991287.4583339691],
+               [1545934260000, 898992.5]
+              ]
+    }
+
+    expect(elasticMetric.getResults(result)).toEqual(expectedResult);
   });
 });
