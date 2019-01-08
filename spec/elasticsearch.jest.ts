@@ -113,7 +113,7 @@ describe('simple query', function(){
     "index": "metricbeat-*"
   },
   {
-    "size": 222,
+    "size": 0,
     "query": {
       "bool": {
         "filter": [
@@ -160,8 +160,7 @@ describe('simple query', function(){
           }
         }
       }
-    },
-    "from": 333
+    }
   }];
 
   let expectedQuery = {
