@@ -34,13 +34,15 @@ export class ElasticsearchMetric extends AbstractMetric {
   }  
 
   getResults(res): MetricResults {
+    let columns = ['timestamp', 'target'];
+    let values = [];
 
     if(res.data === undefined || res.data.responses.length < 1) {
       console.log('datasource return empty response, no data');
       return {
-        columns: ['timestamp', 'target'],
-        values: []
-      };;
+        columns,
+        values
+      };
     }
 
     let aggregations = res.data.responses[0].aggregations;
@@ -54,14 +56,13 @@ export class ElasticsearchMetric extends AbstractMetric {
 
     agg = agg[0];
 
-    try {
-      return {
-        columns: ['timestamp', 'target'],
-        values: responseValues.map(r => [r.key, _.has(r, agg) ? r[agg].value: null])
-      };
-    } catch(e) {
-      console.log(`got error while parse result ${e.message}`);
-      throw e;
+    if(responseValues.length > 0) {
+      values = responseValues.map(r => [r.key, _.has(r, agg) ? r[agg].value: null]);
+    }
+
+    return {
+      columns,
+      values
     }
   }
 }
