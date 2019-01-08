@@ -15,9 +15,6 @@ export class ElasticsearchMetric extends AbstractMetric {
       throw new Error('Datasource data is empty');
     }
 
-    data[1].size = limit;
-    data[1].from = offset;
-
     let filters = data[1].query.bool.filter.filter(f => _.has(f, 'range'));
     if(filters.length === 0) {
       throw new Error('Empty filters');
@@ -55,11 +52,15 @@ export class ElasticsearchMetric extends AbstractMetric {
 
     agg = agg[0];
 
-    return {
-      columns: ['timestamp', 'target'],
-      values: responseValues.map(r => [r.key, _.has(r, agg) ? r[agg].value: null])
-    };
-    
+    try {
+      return {
+        columns: ['timestamp', 'target'],
+        values: responseValues.map(r => [r.key, _.has(r, agg) ? r[agg].value: null])
+      };
+    } catch(e) {
+      console.log(`got error while parse result ${e.message}`);
+      throw e;
+    }
   }
 }
 
