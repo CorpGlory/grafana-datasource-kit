@@ -14,10 +14,11 @@ const CHUNK_SIZE = 50000;
  * @returns { values: [time, value][], columns: string[] }
  */
 export async function queryByMetric(
-  metric: Metric, panelUrl: string, from: number, to: number, apiKey: string
+  metric: Metric, url: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
-  let origin = new URL(panelUrl).origin;
+  const grafanaUrl = getGrafanaUrl(url);
+
   let data = {
     values: [],
     columns: []
@@ -25,7 +26,7 @@ export async function queryByMetric(
 
   while(true) {
     let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    query.url = `${origin}/${query.url}`;
+    query.url = `${grafanaUrl}/${query.url}`;
     let res = await queryGrafana(query, apiKey);
     let chunk = metric.metricQuery.getResults(res);
     let values = chunk.values;
@@ -62,4 +63,16 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
   }
 
   return res;
+}
+
+function getGrafanaUrl(url: string) {
+  const parsedUrl = new URL(url);
+  const path = parsedUrl.pathname;
+  const panelUrl = path.match(/^\/*([^\/]*)\/d\//);
+  if(panelUrl === null) {
+    return url;
+  }
+
+  const grafanaSubPath = panelUrl[1];
+  return `${parsedUrl.origin}/${grafanaSubPath}`;
 }
