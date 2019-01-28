@@ -73,6 +73,11 @@ function getGrafanaUrl(url: string) {
     return url;
   }
 
+  const origin = parsedUrl.origin;
   const grafanaSubPath = panelUrl[1];
-  return `${parsedUrl.origin}/${grafanaSubPath}`;
+  if(grafanaSubPath.length > 0) {
+    return `${origin}/${grafanaSubPath}`;
+  }
+
+  return origin;
 }
