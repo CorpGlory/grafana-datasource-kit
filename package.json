@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/CorpGlory/grafana-datasource-kit.git"
   },
-  "author": "CorpGlory Dev Team",
+  "author": "CorpGlory Inc.",
   "publishConfig": {
     "access": "public"
   },
