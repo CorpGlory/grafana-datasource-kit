@@ -24,6 +24,12 @@ export class ElasticsearchMetric extends AbstractMetric {
     let range = filters[0].range;
     range['@timestamp'].gte = from.toString();
     range['@timestamp'].lte = to.toString();
+    let aggs = _.filter(data[1].aggs, f => _.has(f, 'date_histogram'));
+    _.each(aggs, agg => agg.date_histogram.extended_bounds = {
+      min: from.toString(),
+      max: to.toString()
+    });
+
     data = data.map(d => JSON.stringify(d)).join('\n');
 
     return {
@@ -31,7 +37,7 @@ export class ElasticsearchMetric extends AbstractMetric {
       method: 'POST',
       schema: { data }
     }
-  }  
+  }
 
   getResults(res): MetricResults {
     let columns = ['timestamp', 'target'];
