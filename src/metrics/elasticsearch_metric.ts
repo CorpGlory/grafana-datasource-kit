@@ -52,7 +52,17 @@ export class ElasticsearchMetric extends AbstractMetric {
     }
 
     let aggregations = res.data.responses[0].aggregations;
-    let aggrgAgg = this.targets[0].bucketAggs.filter(a => !a.fake)[0].id;
+    let aggrgAgg: any = this.targets[0].bucketAggs.filter(a => {
+      return !a.fake && _.has(aggregations, a.id)
+    });
+    if(_.isEmpty(aggrgAgg)) {
+      const bucketAggs = JSON.stringify(this.targets[0].bucketAggs);
+      const aggregationKeys = JSON.stringify(_.keys(aggregations));
+      console.error(`can't find related aggregation id. bucketAggs:${bucketAggs} aggregationKeys:${aggregationKeys}`);
+      throw Error(`can't find related aggregation id`);
+    } else {
+      aggrgAgg = aggrgAgg[0].id;
+    }
     let responseValues = aggregations[aggrgAgg].buckets;
     let agg = this.targets[0].metrics.filter(m => !m.hide).map(m => m.id);
 
