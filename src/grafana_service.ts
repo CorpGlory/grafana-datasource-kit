@@ -38,7 +38,6 @@ export async function queryByMetric(
       break;
     }
   }
-
   return data;
 }
 
