@@ -6,6 +6,8 @@ import axios from 'axios';
 import * as _ from 'lodash';
 
 
+export class ConnectionRefused extends Error {}
+
 const CHUNK_SIZE = 50000;
 
 
@@ -54,10 +56,17 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
   try {
     var res = await axios(axiosQuery);
   } catch (e) {
-    console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
-    if(e.response.status === 401) {
-      throw new Error('Unauthorized. Check the API_KEY.');
+    if(e.response !== undefined) {
+      if(e.response.status === 401) {
+        console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
+        throw new Error('Unauthorized. Check the API_KEY.');
+      }
+    } else {
+      if(e.errno === 'ECONNREFUSED') {
+        throw new ConnectionRefused(e.message);
+      }
     }
+    console.error(`Data kit: got response ${e.response ? e.response.status : e.response}, message: ${e.message}`);
     throw new Error(e.message);
   }
 
