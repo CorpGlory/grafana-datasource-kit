@@ -66,7 +66,7 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
         throw new ConnectionRefused(e.message);
       }
     }
-    console.log(`Data kit: got response ${e.response ? e.response.status : e.response}, message: ${e.message}`);
+    console.error(`Data kit: got response ${e.response ? e.response.status : e.response}, message: ${e.message}`);
     throw new Error(e.message);
   }
 
