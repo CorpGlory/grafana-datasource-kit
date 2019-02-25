@@ -6,7 +6,10 @@ import axios from 'axios';
 import * as _ from 'lodash';
 
 
-export class ConnectionRefused extends Error {}
+export class GrafanaUnavailable extends Error {};
+export class DatasourceUnavailable extends Error {
+  public url: string;
+};
 
 const CHUNK_SIZE = 50000;
 
@@ -61,9 +64,16 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
         console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
         throw new Error('Unauthorized. Check the API_KEY.');
       }
+      if(e.response.status === 502) {
+        const msg = `datasource ${query.url} unavailable, message: ${e.message}`
+        console.error(`Data kit: ${msg}`);
+        let datasourceError = new DatasourceUnavailable(msg);
+        datasourceError.url = query.url;
+        throw datasourceError;
+      }
     } else {
       if(e.errno === 'ECONNREFUSED') {
-        throw new ConnectionRefused(e.message);
+        throw new GrafanaUnavailable(e.message);
       }
     }
     console.error(`Data kit: got response ${e.response ? e.response.status : e.response}, message: ${e.message}`);
