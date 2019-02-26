@@ -1,3 +1,3 @@
 export { Metric } from './metrics/metrics_factory';
 export { Datasource } from './metrics/metric'
-export { queryByMetric, ConnectionRefused } from './grafana_service';
+export { queryByMetric, GrafanaUnavailable, DatasourceUnavailable } from './grafana_service';
