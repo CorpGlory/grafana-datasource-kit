@@ -68,7 +68,7 @@ export class Metric {
     if(obj === undefined) {
       throw new Error('obj is undefined');
     }
-    return new this(
+    return new Metric(
       obj.datasource,
       obj.targets,
       obj._id
