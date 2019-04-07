@@ -68,16 +68,16 @@ export class PrometheusMetric extends AbstractMetric {
         let currentValue = v[0][1];
 
         if(currentTimestamp === t) {
-          row.push(currentValue);
+          row.push(+currentValue);
           v.shift();
         }
         else {
-          row.push('');
+          row.push(null);
         }
       });
+      row[0] = +row[0] * 1000; //convert timestamp to ms
       result_matrix.values.push(row);
     };
-
     return result_matrix;
   }
 }
