@@ -5,7 +5,7 @@
 Node.js library for running Grafana datasources on backend plus utils.
 You can send your datasource metric from Grafana to compile it on Node.js and query your datasource via Grafana API in background.
 
-User gets unified interface, library provides same output format for each datasource, such as fields order, time units.
+User gets unified interface. Library gives same output format for each datasource: fields order, time units, etc
 
 ## Supported datasources
 
