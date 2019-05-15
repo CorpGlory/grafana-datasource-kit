@@ -59,6 +59,9 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
   try {
     var res = await axios(axiosQuery);
   } catch (e) {
+    if(e.errno === 'ECONNREFUSED') {
+      throw new GrafanaUnavailable(e.message);
+    }
     if(e.response !== undefined) {
       if(e.response.status === 401) {
         console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
@@ -71,13 +74,22 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
         datasourceError.url = query.url;
         throw datasourceError;
       }
-    } else {
-      if(e.errno === 'ECONNREFUSED') {
-        throw new GrafanaUnavailable(e.message);
-      }
+      const msg = `Data kit: got response ${e.response.status}. More info in logs`;
+      console.log(`Data kit: \
+        status: ${e.response.status}, \
+        response data: ${e.response.data}, \
+        headers: ${e.response.headers}
+      `);
+      throw new Error(msg);
     }
-    console.error(`Data kit: got response ${e.response ? e.response.status : e.response}, message: ${e.message}`);
-    throw new Error(e.message);
+    if(e.request !== undefined) {
+      const msg = `Data kit: request: ${e.request}, config: ${e.config}`;
+      console.error(msg);
+      throw new Error(`${e.message}. More info in logs`);
+    }
+    const msg = `Data kit: config: ${e.config}`;
+    console.error(`${e.message}. More info in logs`);
+    throw new Error(msg);
   }
 
   return res;
