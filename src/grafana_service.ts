@@ -59,25 +59,29 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
   try {
     var res = await axios(axiosQuery);
   } catch (e) {
+    const msg = `Data kit: fail while request data: ${e.message}`;
+    const parsedUrl = new URL(query.url);
+    const queryUrl = `query url: ${JSON.stringify(parsedUrl.pathname)}`;
+    console.error(`${msg} ${queryUrl}`);
+    if(e.errno === 'ECONNREFUSED') {
+      throw new GrafanaUnavailable(e.message);
+    }
     if(e.response !== undefined) {
+      console.error(`Response: \
+        status: ${e.response.status}, \
+        response data: ${e.response.data}, \
+        headers: ${JSON.stringify(e.response.headers)}
+      `);
       if(e.response.status === 401) {
-        console.log(`Data kit: got response ${e.response.status}, message: ${e.message}`);
-        throw new Error('Unauthorized. Check the API_KEY.');
+        throw new Error(`Unauthorized. Check the API_KEY. ${e.message}`);
       }
       if(e.response.status === 502) {
-        const msg = `datasource ${query.url} unavailable, message: ${e.message}`
-        console.error(`Data kit: ${msg}`);
-        let datasourceError = new DatasourceUnavailable(msg);
+        let datasourceError = new DatasourceUnavailable(`datasource ${parsedUrl.pathname} unavailable, message: ${e.message}`);
         datasourceError.url = query.url;
         throw datasourceError;
       }
-    } else {
-      if(e.errno === 'ECONNREFUSED') {
-        throw new GrafanaUnavailable(e.message);
-      }
     }
-    console.error(`Data kit: got response ${e.response ? e.response.status : e.response}, message: ${e.message}`);
-    throw new Error(e.message);
+    throw new Error(msg);
   }
 
   return res;
