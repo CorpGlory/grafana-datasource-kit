@@ -19,7 +19,7 @@ describe('correct Graphite query', function() {
 
   it("test simple query with time clause", function () {
     expect(query.metricQuery.getQuery(1534809600000, 1537488000000, 500, 0).url).toBe(
-      `${datasource.url}?target=${target}&from=3:00_20180821&until=3:00_20180921&maxDataPoints=500`
+      `${datasource.url}?target=${target}&from=1534809600&until=1537488000&maxDataPoints=500`
     )
   });
 })

@@ -1,7 +1,6 @@
 import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults  } from './metric';
 
 import * as _ from 'lodash';
-import * as moment from 'moment';
 
 
 export class GraphiteMetric extends AbstractMetric {
@@ -10,9 +9,8 @@ export class GraphiteMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
-    let moment_format = 'h:mm_YYYYMMDD';
-    let from_date = moment(from).format(moment_format);
-    let to_date = moment(to).format(moment_format);
+    let fromDate = Math.floor(from / 1000);
+    let toDate = Math.floor(to / 1000);
 
     let fromRegex = /from=[^\&]+/i;
     let untilRegex = /until=[^\&]+/i;
@@ -20,8 +18,8 @@ export class GraphiteMetric extends AbstractMetric {
 
     let query: string = this.datasource.data;
     let replacements: [RegExp, string][] = [
-      [fromRegex, `from=${from_date}`],
-      [untilRegex, `until=${to_date}`],
+      [fromRegex, `from=${fromDate}`],
+      [untilRegex, `until=${toDate}`],
       [limitRegex, `maxDataPoints=${limit}`]
     ];
 
