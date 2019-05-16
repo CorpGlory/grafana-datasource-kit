@@ -29,5 +29,10 @@ export abstract class AbstractMetric {
     public id?: MetricId
   ) {};
   abstract getQuery(from: number, to: number, limit: number, offset: number): MetricQuery;
+  /*
+    from / to - timestamp in ms
+    limit - max number of items in result
+    offset - number of items to skip from timerange start
+  */
   abstract getResults(res): MetricResults;
 }
