@@ -9,8 +9,8 @@ export class GraphiteMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
-    let from_date = Math.floor(from / 1000);
-    let to_date = Math.floor(to / 1000);
+    let fromDate = Math.floor(from / 1000);
+    let toDate = Math.floor(to / 1000);
 
     let fromRegex = /from=[^\&]+/i;
     let untilRegex = /until=[^\&]+/i;
@@ -18,8 +18,8 @@ export class GraphiteMetric extends AbstractMetric {
 
     let query: string = this.datasource.data;
     let replacements: [RegExp, string][] = [
-      [fromRegex, `from=${from_date}`],
-      [untilRegex, `until=${to_date}`],
+      [fromRegex, `from=${fromDate}`],
+      [untilRegex, `until=${toDate}`],
       [limitRegex, `maxDataPoints=${limit}`]
     ];
 
