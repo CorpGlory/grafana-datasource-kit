@@ -69,7 +69,7 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
     if(e.response !== undefined) {
       console.error(`Response: \
         status: ${e.response.status}, \
-        response data: ${e.response.data}, \
+        response data: ${JSON.stringify(e.response.data)}, \
         headers: ${JSON.stringify(e.response.headers)}
       `);
       if(e.response.status === 401) {
