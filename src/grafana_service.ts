@@ -48,6 +48,12 @@ export async function queryByMetric(
 
 async function queryGrafana(query: MetricQuery, apiKey: string) {
   let headers = { Authorization: `Bearer ${apiKey}` };
+
+  if(query.headers !== undefined) {
+    _.merge(headers, query.headers);
+  }
+
+
   let axiosQuery = {
     headers,
     url: query.url,

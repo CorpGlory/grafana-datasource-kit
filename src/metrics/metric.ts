@@ -13,6 +13,7 @@ export type MetricQuery = {
   url: string;
   method: string;
   schema: any;
+  headers?: any;
 }
 
 export type MetricResults = {
