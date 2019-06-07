@@ -30,7 +30,10 @@ export class ElasticsearchMetric extends AbstractMetric {
       max: to.toString()
     });
 
-    data = data.filter(d => d !== '').map(d => JSON.stringify(d)).join('\n');
+    data = data
+      .filter(d => d !== '')
+      .map(d => JSON.stringify(d))
+      .join('\n');
     data += '\n';
 
     return {
