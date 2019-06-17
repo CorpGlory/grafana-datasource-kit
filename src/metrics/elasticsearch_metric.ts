@@ -36,7 +36,7 @@ export class ElasticsearchMetric extends AbstractMetric {
       url: this.datasource.url,
       method: 'POST',
       schema: { data },
-      headers: {'Content-Type': `application/json;charset=UTF-8`}
+      headers: {'Content-Type': 'application/json'}
     }
   }
 
