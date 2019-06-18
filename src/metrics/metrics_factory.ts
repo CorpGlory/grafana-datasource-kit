@@ -9,7 +9,8 @@ import { ElasticsearchMetric } from './elasticsearch_metric';
 export function metricFactory(
   datasource: Datasource,
   targets: any[],
-  id?: MetricId
+  id?: MetricId,
+  name?: string
 ): AbstractMetric {
 
   let classMap = {
@@ -23,17 +24,19 @@ export function metricFactory(
     console.error(`Datasources of type ${datasource.type} are not supported currently`);
     throw new Error(`Datasources of type ${datasource.type} are not supported currently`);
   } else {
-    return new classMap[datasource.type](datasource, targets, id);
+    return new classMap[datasource.type](datasource, targets, id, name);
   }
 }
 
 export class Metric {
-  datasource: Datasource;
-  targets: any[];
-  id?: MetricId;
   private _metricQuery: AbstractMetric = undefined;
 
-  constructor(datasource: Datasource, targets: any[], id?: MetricId) {
+  constructor(
+    public datasource: Datasource, 
+    public targets: any[], 
+    public id?: MetricId,
+    public name?: string
+  ) {
     if(datasource === undefined) {
       throw new Error('datasource is undefined');
     }
@@ -43,14 +46,11 @@ export class Metric {
     if(targets.length === 0) {
       throw new Error('targets is empty');
     }
-    this.datasource = datasource;
-    this.targets = targets;
-    this.id = id;
   }
 
   public get metricQuery() {
     if(this._metricQuery === undefined) {
-      this._metricQuery = metricFactory(this.datasource, this.targets, this.id);
+      this._metricQuery = metricFactory(this.datasource, this.targets, this.id, this.name);
     }
     return this._metricQuery;
   }
@@ -60,7 +60,8 @@ export class Metric {
     return {
       datasource: this.datasource,
       targets: this.targets,
-      _id: this.id
+      _id: this.id,
+      name: this.name
     };
   }
 
@@ -71,7 +72,8 @@ export class Metric {
     return new Metric(
       obj.datasource,
       obj.targets,
-      obj._id
+      obj._id,
+      obj.name
     );
   }
 }
