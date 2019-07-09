@@ -31,7 +31,7 @@ export async function queryByMetric(
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
   if(from > to) {
-    throw new DataKitBadRange(
+    throw new BadRange(
       `Data-kit got wrong range: from ${from} > to ${to}`,
       metric.datasource.type,
       url
