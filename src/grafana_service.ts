@@ -22,6 +22,14 @@ export async function queryByMetric(
   metric: Metric, url: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
+  if(from > to) {
+    throw new Error(`Data-kit got wrong range: from ${from} > to ${to}`);
+  }
+
+  if(from === to) {
+    console.warn(`Data-kit got from === to`);
+  }
+
   const grafanaUrl = getGrafanaUrl(url);
 
   let data = {
