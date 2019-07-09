@@ -1,15 +1,23 @@
 import { Metric } from './metrics/metrics_factory';
-import { MetricQuery } from './metrics/metric';
+import { MetricQuery, Datasource } from './metrics/metric';
 
 import { URL } from 'url';
 import axios from 'axios';
 import * as _ from 'lodash';
 
-
-export class GrafanaUnavailable extends Error {};
-export class DatasourceUnavailable extends Error {
-  public url: string;
+export class DataKitError extends Error {
+  constructor(
+    message: string,
+    public datasourceType?: string,
+    public datasourceUrl?: string
+  ) {
+    super(message);
+  }
 };
+
+export class DataKitBadRange extends DataKitError {};
+export class GrafanaUnavailable extends DataKitError {};
+export class DatasourceUnavailable extends DataKitError {};
 
 const CHUNK_SIZE = 50000;
 
@@ -23,7 +31,11 @@ export async function queryByMetric(
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
   if(from > to) {
-    throw new Error(`Data-kit got wrong range: from ${from} > to ${to}`);
+    throw new DataKitBadRange(
+      `Data-kit got wrong range: from ${from} > to ${to}`,
+      metric.datasource.type,
+      url
+    );
   }
 
   if(from === to) {
@@ -40,7 +52,7 @@ export async function queryByMetric(
   while(true) {
     let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
     query.url = `${grafanaUrl}/${query.url}`;
-    let res = await queryGrafana(query, apiKey);
+    let res = await queryGrafana(query, apiKey, metric.datasource);
     let chunk = metric.metricQuery.getResults(res);
     let values = chunk.values;
     data.values = data.values.concat(values);
@@ -54,7 +66,7 @@ export async function queryByMetric(
   return data;
 }
 
-async function queryGrafana(query: MetricQuery, apiKey: string) {
+async function queryGrafana(query: MetricQuery, apiKey: string, datasource: Datasource) {
   let headers = { Authorization: `Bearer ${apiKey}` };
 
   if(query.headers !== undefined) {
@@ -90,8 +102,11 @@ async function queryGrafana(query: MetricQuery, apiKey: string) {
         throw new Error(`Unauthorized. Check the API_KEY. ${e.message}`);
       }
       if(e.response.status === 502) {
-        let datasourceError = new DatasourceUnavailable(`datasource ${parsedUrl.pathname} unavailable, message: ${e.message}`);
-        datasourceError.url = query.url;
+        let datasourceError = new DatasourceUnavailable(
+          `datasource ${parsedUrl.pathname} unavailable, message: ${e.message}`,
+          datasource.type,
+          query.url
+        );
         throw datasourceError;
       }
     }
