@@ -15,7 +15,7 @@ export class DataKitError extends Error {
   }
 };
 
-export class DataKitBadRange extends DataKitError {};
+export class BadRange extends DataKitError {};
 export class GrafanaUnavailable extends DataKitError {};
 export class DatasourceUnavailable extends DataKitError {};
 
