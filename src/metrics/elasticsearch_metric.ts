@@ -24,8 +24,18 @@ export class ElasticsearchMetric extends AbstractMetric {
       min: from.toString(),
       max: to.toString()
       };
+
+      if(timeField !== null) {
+        console.warn(
+          `got more than one datasource time filed, change ${timeField} to ${agg.date_histogram.field}`
+        );
+      }
       timeField = agg.date_histogram.field;
     });
+
+    if(timeField === null) {
+      throw new Error('datasource time field not found');
+    }
 
     let filters = data[1].query.bool.filter.filter(f => _.has(f, 'range'));
     if(filters.length === 0) {
