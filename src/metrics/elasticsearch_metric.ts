@@ -16,19 +16,25 @@ export class ElasticsearchMetric extends AbstractMetric {
     }
 
     data[1].size = 0;
+    let timeField = null;
+
+    let aggs = _.filter(data[1].aggs, f => _.has(f, 'date_histogram'));
+    _.each(aggs, agg => {
+      agg.date_histogram.extended_bounds = {
+      min: from.toString(),
+      max: to.toString()
+      };
+      timeField = agg.date_histogram.field;
+    });
 
     let filters = data[1].query.bool.filter.filter(f => _.has(f, 'range'));
     if(filters.length === 0) {
       throw new Error('Empty filters');
     }
     let range = filters[0].range;
-    range['@timestamp'].gte = from.toString();
-    range['@timestamp'].lte = to.toString();
-    let aggs = _.filter(data[1].aggs, f => _.has(f, 'date_histogram'));
-    _.each(aggs, agg => agg.date_histogram.extended_bounds = {
-      min: from.toString(),
-      max: to.toString()
-    });
+    range[timeField].gte = from.toString();
+    range[timeField].lte = to.toString();
+
 
     data = data
       .filter(d => d !== '')
