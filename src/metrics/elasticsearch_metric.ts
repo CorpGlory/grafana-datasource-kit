@@ -27,7 +27,7 @@ export class ElasticsearchMetric extends AbstractMetric {
 
       if(timeField !== null) {
         console.warn(
-          `got more than one datasource time filed, change ${timeField} to ${agg.date_histogram.field}`
+          `got more than one datasource time field, change ${timeField} to ${agg.date_histogram.field}`
         );
       }
       timeField = agg.date_histogram.field;
