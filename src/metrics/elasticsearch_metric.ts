@@ -3,6 +3,19 @@ import { DataKitError } from '../grafana_service';
 
 import * as _ from 'lodash';
 
+export type RangeFilter = { range: { [key: string]: { gte: String, lte: String } } };
+export type QueryStringFilter = { query_string: { analyze_wildcard: Boolean, query: String } };
+
+export type QueryConfig = {
+  size: number,
+  query: {
+    bool: {
+      filter: (RangeFilter | QueryStringFilter)[]
+    }
+  },
+  aggs: { [key: string]: Aggregation }
+};
+
 export type Aggregation = {
   date_histogram: {
     interval: String,
@@ -24,7 +37,7 @@ export class ElasticsearchMetric extends AbstractMetric {
       throw new DataKitError('Datasource data is empty');
     }
 
-    const queryConfig = data[1];
+    const queryConfig: QueryConfig = data[1];
 
     queryConfig.size = 0;
     let timeField = null;
@@ -48,7 +61,7 @@ export class ElasticsearchMetric extends AbstractMetric {
       throw new Error('datasource time field not found');
     }
 
-    let filters = queryConfig.query.bool.filter.filter(f => _.has(f, 'range'));
+    let filters = queryConfig.query.bool.filter.filter(f => _.has(f, 'range')) as RangeFilter[];
     if(filters.length === 0) {
       throw new DataKitError('Empty filters');
     }
