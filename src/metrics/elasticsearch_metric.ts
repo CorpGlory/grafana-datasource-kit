@@ -2,6 +2,15 @@ import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults  } fro
 
 import * as _ from 'lodash';
 
+export type Aggregation = {
+  date_histogram: {
+    interval: String,
+    field: String,
+    min_doc_count: Number,
+    extended_bounds: { min: String, max: String },
+    format: String
+  }
+};
 
 export class ElasticsearchMetric extends AbstractMetric {
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
@@ -10,19 +19,20 @@ export class ElasticsearchMetric extends AbstractMetric {
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let data = this.datasource.data.split('\n').map(d => d === '' ? d: JSON.parse(d));
-
     if(data.length === 0) {
       throw new Error('Datasource data is empty');
     }
 
-    data[1].size = 0;
+    const queryConfig = data[1];
+
+    queryConfig.size = 0;
     let timeField = null;
 
-    let aggs = _.filter(data[1].aggs, f => _.has(f, 'date_histogram'));
-    _.each(aggs, agg => {
+    let aggs = _.filter(queryConfig.aggs, f => _.has(f, 'date_histogram'));
+    _.each(aggs, (agg: Aggregation) => {
       agg.date_histogram.extended_bounds = {
-      min: from.toString(),
-      max: to.toString()
+        min: from.toString(),
+        max: to.toString()
       };
 
       if(timeField !== null) {
@@ -37,7 +47,7 @@ export class ElasticsearchMetric extends AbstractMetric {
       throw new Error('datasource time field not found');
     }
 
-    let filters = data[1].query.bool.filter.filter(f => _.has(f, 'range'));
+    let filters = queryConfig.query.bool.filter.filter(f => _.has(f, 'range'));
     if(filters.length === 0) {
       throw new Error('Empty filters');
     }
