@@ -1,4 +1,5 @@
-import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults  } from './metric';
+import { AbstractMetric, Datasource, MetricId, MetricQuery, MetricResults } from './metric';
+import { DataKitError } from '../grafana_service';
 
 import * as _ from 'lodash';
 
@@ -20,7 +21,7 @@ export class ElasticsearchMetric extends AbstractMetric {
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
     let data = this.datasource.data.split('\n').map(d => d === '' ? d: JSON.parse(d));
     if(data.length === 0) {
-      throw new Error('Datasource data is empty');
+      throw new DataKitError('Datasource data is empty');
     }
 
     const queryConfig = data[1];
@@ -49,7 +50,7 @@ export class ElasticsearchMetric extends AbstractMetric {
 
     let filters = queryConfig.query.bool.filter.filter(f => _.has(f, 'range'));
     if(filters.length === 0) {
-      throw new Error('Empty filters');
+      throw new DataKitError('Empty filters');
     }
     let range = filters[0].range;
     range[timeField].gte = from.toString();
@@ -90,7 +91,7 @@ export class ElasticsearchMetric extends AbstractMetric {
       const bucketAggs = JSON.stringify(this.targets[0].bucketAggs);
       const aggregationKeys = JSON.stringify(_.keys(aggregations));
       console.error(`can't find related aggregation id. bucketAggs:${bucketAggs} aggregationKeys:${aggregationKeys}`);
-      throw Error(`can't find related aggregation id`);
+      throw new DataKitError(`can't find related aggregation id`);
     } else {
       aggrgAgg = aggrgAgg[0].id;
     }
@@ -98,7 +99,7 @@ export class ElasticsearchMetric extends AbstractMetric {
     let agg = this.targets[0].metrics.filter(m => !m.hide).map(m => m.id);
 
     if(agg.length > 1) {
-      throw Error(`multiple series for metric are not supported currently: ${JSON.stringify(agg)}`);
+      throw new DataKitError(`multiple series for metric are not supported currently: ${JSON.stringify(agg)}`);
     }
 
     agg = agg[0];
