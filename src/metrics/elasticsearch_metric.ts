@@ -26,6 +26,8 @@ export type Aggregation = {
   }
 };
 
+const DATE_HISTOGRAM_FIELD = 'date_histogram';
+
 export class ElasticsearchMetric extends AbstractMetric {
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
@@ -42,19 +44,19 @@ export class ElasticsearchMetric extends AbstractMetric {
     queryConfig.size = 0;
     let timeField = null;
 
-    let aggs = _.filter(queryConfig.aggs, f => _.has(f, 'date_histogram'));
+    let aggs = _.filter(queryConfig.aggs, f => _.has(f, DATE_HISTOGRAM_FIELD));
     _.each(aggs, (agg: Aggregation) => {
-      agg.date_histogram.extended_bounds = {
+      agg[DATE_HISTOGRAM_FIELD].extended_bounds = {
         min: from.toString(),
         max: to.toString()
       };
 
       if(timeField !== null) {
         console.warn(
-          `got more than one datasource time field, change ${timeField} to ${agg.date_histogram.field}`
+          `got more than one datasource time field, change ${timeField} to ${agg[DATE_HISTOGRAM_FIELD].field}`
         );
       }
-      timeField = agg.date_histogram.field;
+      timeField = agg[DATE_HISTOGRAM_FIELD].field;
     });
 
     if(timeField === null) {
