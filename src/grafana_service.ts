@@ -26,6 +26,52 @@ const CHUNK_SIZE = 50000;
  * @param metric to query to Grafana
  * @returns { values: [time, value][], columns: string[] }
  */
+
+export class Queryer {
+  constructor(metric: Metric, url: string, apiKey: string) {
+    this.metric = metric;
+    this.url = url;
+    this.apiKey = apiKey;
+  };
+  queryByMetric(from: number, to: number): Promise<{ values: [number, number][], columns: string[] }> {
+
+    if (from > to) {
+      throw new BadRange(
+        `Data-kit got wrong range: from ${from} > to ${to}`,
+        this.metric.datasource.type,
+        this.url
+      );
+    }
+
+    if (from === to) {
+      console.warn(`Data-kit got from === to`);
+    }
+
+    const grafanaUrl = getGrafanaUrl(url);
+
+    let data = {
+      values: [],
+      columns: []
+    };
+
+    while (true) {
+      let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
+      query.url = `${grafanaUrl}/${query.url}`;
+      let res = await queryGrafana(query, apiKey, metric.datasource);
+      let chunk = metric.metricQuery.getResults(res);
+      let values = chunk.values;
+      data.values = data.values.concat(values);
+      data.columns = chunk.columns;
+
+      if (values.length < CHUNK_SIZE) {
+        // because if we get less that we could, then there is nothing more
+        break;
+      }
+    }
+    return data;
+  }
+}
+
 export async function queryByMetric(
   metric: Metric, url: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
