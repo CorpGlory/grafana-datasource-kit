@@ -38,6 +38,7 @@ export class DatasourceRequest {
     this.url = url;
     this.apiKey = apiKey;
   };
+
   async queryByMetric(from: number, to: number): Promise<{ values: [number, number][], columns: string[] }> {
 
     if (from > to) {
@@ -52,7 +53,7 @@ export class DatasourceRequest {
       console.warn(`Data-kit got from === to`);
     }
 
-    const grafanaUrl = this.getGrafanaUrl();
+    const grafanaUrl = this.getGrafanaUrl(this.url);
 
     let data = {
       values: [],
@@ -75,12 +76,13 @@ export class DatasourceRequest {
     }
     return data;
   }
-  getGrafanaUrl() {
-    const parsedUrl = new URL(this.url);
+
+  getGrafanaUrl(url: string) {
+    const parsedUrl = new URL(url);
     const path = parsedUrl.pathname;
     const panelUrl = path.match(/^\/*([^\/]*)\/d\//);
     if (panelUrl === null) {
-      return this.url;
+      return url;
     }
 
     const origin = parsedUrl.origin;
