@@ -27,7 +27,12 @@ const CHUNK_SIZE = 50000;
  * @returns { values: [time, value][], columns: string[] }
  */
 
-export class Queryer {
+export class DatasourceRequest {
+
+  public metric: Metric = undefined;
+  public url: string = undefined;
+  public apiKey: string = undefined;
+
   constructor(metric: Metric, url: string, apiKey: string) {
     this.metric = metric;
     this.url = url;
@@ -47,7 +52,7 @@ export class Queryer {
       console.warn(`Data-kit got from === to`);
     }
 
-    const grafanaUrl = getGrafanaUrl(url);
+    const grafanaUrl = getGrafanaUrl(this.url);
 
     let data = {
       values: [],
@@ -55,10 +60,10 @@ export class Queryer {
     };
 
     while (true) {
-      let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
+      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
       query.url = `${grafanaUrl}/${query.url}`;
-      let res = await queryGrafana(query, apiKey, metric.datasource);
-      let chunk = metric.metricQuery.getResults(res);
+      let res = await queryGrafana(query, this.apiKey, this.metric.datasource);
+      let chunk = this.metric.metricQuery.getResults(res);
       let values = chunk.values;
       data.values = data.values.concat(values);
       data.columns = chunk.columns;
