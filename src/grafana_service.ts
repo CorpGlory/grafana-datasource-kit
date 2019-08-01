@@ -52,7 +52,7 @@ export class DatasourceRequest {
       console.warn(`Data-kit got from === to`);
     }
 
-    const grafanaUrl = getGrafanaUrl(this.url);
+    const grafanaUrl = this.getGrafanaUrl();
 
     let data = {
       values: [],
@@ -74,6 +74,22 @@ export class DatasourceRequest {
       }
     }
     return data;
+  }
+  getGrafanaUrl() {
+    const parsedUrl = new URL(this.url);
+    const path = parsedUrl.pathname;
+    const panelUrl = path.match(/^\/*([^\/]*)\/d\//);
+    if (panelUrl === null) {
+      return this.url;
+    }
+
+    const origin = parsedUrl.origin;
+    const grafanaSubPath = panelUrl[1];
+    if (grafanaSubPath.length > 0) {
+      return `${origin}/${grafanaSubPath}`;
+    }
+
+    return origin;
   }
 }
 
