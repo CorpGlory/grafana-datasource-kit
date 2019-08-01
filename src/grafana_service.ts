@@ -38,7 +38,7 @@ export class DatasourceRequest {
     this.url = url;
     this.apiKey = apiKey;
   };
-  queryByMetric(from: number, to: number): Promise<{ values: [number, number][], columns: string[] }> {
+  async queryByMetric(from: number, to: number): Promise<{ values: [number, number][], columns: string[] }> {
 
     if (from > to) {
       throw new BadRange(
