@@ -15,7 +15,7 @@ export class DataKitError extends Error {
   }
 };
 
-export class BadRange extends DataKitError {};
+export class BadRange extends Error {};
 export class GrafanaUnavailable extends DataKitError {};
 export class DatasourceUnavailable extends DataKitError {};
 
@@ -41,13 +41,11 @@ export class DatasourceRequest {
     }
   };
 
-  async queryByMetric(from: number, to: number): Promise<{ values: [number, number][], columns: string[] }> {
+  async query(from: number, to: number): Promise<QueryResult> {
 
     if (from > to) {
       throw new BadRange(
-        `Data-kit got wrong range: from ${from} > to ${to}`,
-        this.metric.datasource.type,
-        this.url
+        `Data-kit got wrong range: from ${from} > to ${to}`
       );
     }
 
@@ -57,23 +55,23 @@ export class DatasourceRequest {
 
     const grafanaUrl = this.getGrafanaUrl(this.url);
 
-    let currentResult = new QueryResult([], []);
+    let currentQueryResult = new QueryResult();
 
     while (true) {
-      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, currentResult.getValuesLength());
+      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, currentQueryResult.getValuesLength());
       query.url = `${grafanaUrl}/${query.url}`;
       let res = await queryGrafana(query, this.apiKey, this.metric.datasource);
       let chunk = this.metric.metricQuery.getResults(res);
       let values = chunk.values;
-      currentResult.appendValues(values);
-      currentResult.updateColumns(chunk.columns);
+      currentQueryResult.appendValues(values);
+      currentQueryResult.updateColumns(chunk.columns);
 
       if (values.length < CHUNK_SIZE) {
         // because if we get less than we can, we can stop here
         break;
       }
     }
-    return currentResult.toObject();
+    return currentQueryResult;
   }
 
   getGrafanaUrl(url: string): string {
@@ -98,39 +96,9 @@ export async function queryByMetric(
   metric: Metric, url: string, from: number, to: number, apiKey: string
 ): Promise<{ values: [number, number][], columns: string[] }> {
 
-  if(from > to) {
-    throw new BadRange(
-      `Data-kit got wrong range: from ${from} > to ${to}`,
-      metric.datasource.type,
-      url
-    );
-  }
-
-  if(from === to) {
-    console.warn(`Data-kit got from === to`);
-  }
-
-  const grafanaUrl = getGrafanaUrl(url);
-
-  let data = {
-    values: [],
-    columns: []
-  };
-
-  while(true) {
-    let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
-    query.url = `${grafanaUrl}/${query.url}`;
-    let res = await queryGrafana(query, apiKey, metric.datasource);
-    let chunk = metric.metricQuery.getResults(res);
-    let values = chunk.values;
-    data.values = data.values.concat(values);
-    data.columns = chunk.columns;
-
-    if(values.length < CHUNK_SIZE) {
-      // because if we get less that we could, then there is nothing more
-      break;
-    }
-  }
+  let dataRequest = new DatasourceRequest(metric, url, apiKey);
+  let query = await dataRequest.query(from, to);
+  let data = query.toObject();
   return data;
 }
 
@@ -203,13 +171,10 @@ function getGrafanaUrl(url: string) {
 
 export class QueryResult {
 
-  public values: [number, number][];
-  public columns: string[];
-
-  constructor() {
-    this.values = [];
-    this.columns = [];
-  };
+  constructor(
+    public values: [number, number][] = [],
+    public columns: string[] = []
+  ) {};
 
   public appendValues(values: [number, number][]) {
     this.values.concat(values);
@@ -222,7 +187,7 @@ export class QueryResult {
   public getValuesLength(): number {
     return this.values.length;
   }
-  public toObject() {
+  public toObject(): { values: [number, number][], columns: string[] } {
     return {
       values: this.values,
       columns: this.columns,
