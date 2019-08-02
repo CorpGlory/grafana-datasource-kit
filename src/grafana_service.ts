@@ -29,14 +29,16 @@ const CHUNK_SIZE = 50000;
 
 export class DatasourceRequest {
 
-  public metric: Metric = undefined;
-  public url: string = undefined;
-  public apiKey: string = undefined;
-
-  constructor(metric: Metric, url: string, apiKey: string) {
-    this.metric = metric;
-    this.url = url;
-    this.apiKey = apiKey;
+  constructor(public metric: Metric, public url: string, public apiKey: string) {
+    if (metric === undefined) {
+      throw new Error(`Missing field "metric"`);
+    }
+    if (url === undefined) {
+      throw new Error(`Missing field "url"`);
+    }
+    if (apiKey === undefined) {
+      throw new Error(`Missing field "apiKey"`);
+    }
   };
 
   async queryByMetric(from: number, to: number): Promise<{ values: [number, number][], columns: string[] }> {
@@ -70,7 +72,7 @@ export class DatasourceRequest {
       data.columns = chunk.columns;
 
       if (values.length < CHUNK_SIZE) {
-        // because if we get less that we could, then there is nothing more
+        // because if we get less than we can, we can stop here
         break;
       }
     }
