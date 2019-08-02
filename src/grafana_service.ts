@@ -203,3 +203,15 @@ function getGrafanaUrl(url: string) {
 
   return origin;
 }
+
+export class QueryResult {
+
+  constructor(public values: [number, number][], public colums: string) {
+    if (values === undefined) {
+      throw new Error(`Missing field "values"`);
+    }
+    if (colums === undefined) {
+      throw new Error(`Missing field "colums"`);
+    }
+  };
+}
