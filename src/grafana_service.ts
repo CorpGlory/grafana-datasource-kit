@@ -57,29 +57,26 @@ export class DatasourceRequest {
 
     const grafanaUrl = this.getGrafanaUrl(this.url);
 
-    let data = {
-      values: [],
-      columns: []
-    };
+    let currentResult = new QueryResult([], []);
 
     while (true) {
-      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
+      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, currentResult.getValuesLength());
       query.url = `${grafanaUrl}/${query.url}`;
       let res = await queryGrafana(query, this.apiKey, this.metric.datasource);
       let chunk = this.metric.metricQuery.getResults(res);
       let values = chunk.values;
-      data.values = data.values.concat(values);
-      data.columns = chunk.columns;
+      currentResult.appendValues(values);
+      currentResult.updateColumns(chunk.columns);
 
       if (values.length < CHUNK_SIZE) {
         // because if we get less than we can, we can stop here
         break;
       }
     }
-    return data;
+    return currentResult.toObject();
   }
 
-  getGrafanaUrl(url: string) {
+  getGrafanaUrl(url: string): string {
     const parsedUrl = new URL(url);
     const path = parsedUrl.pathname;
     const panelUrl = path.match(/^\/*([^\/]*)\/d\//);
@@ -206,12 +203,29 @@ function getGrafanaUrl(url: string) {
 
 export class QueryResult {
 
-  constructor(public values: [number, number][], public colums: string) {
-    if (values === undefined) {
-      throw new Error(`Missing field "values"`);
-    }
-    if (colums === undefined) {
-      throw new Error(`Missing field "colums"`);
-    }
+  public values: [number, number][];
+  public columns: string[];
+
+  constructor() {
+    this.values = [];
+    this.columns = [];
   };
+
+  public appendValues(values: [number, number][]) {
+    this.values.concat(values);
+  };
+
+  public updateColumns(columns: string[]) {
+    this.columns = columns;
+  };
+
+  public getValuesLength(): number {
+    return this.values.length;
+  }
+  public toObject() {
+    return {
+      values: this.values,
+      columns: this.columns,
+    };
+  }
 }
