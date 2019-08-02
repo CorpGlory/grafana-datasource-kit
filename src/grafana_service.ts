@@ -5,6 +5,17 @@ import { URL } from 'url';
 import axios from 'axios';
 import * as _ from 'lodash';
 
+
+export type TimeSeries = {
+  columns: string[],
+  values: [number, number][]
+}
+
+export type TimeSeriesPoint = {
+  columns: string[],
+  values: [number, number][]
+}
+
 export class DataKitError extends Error {
   constructor(
     message: string,
@@ -26,9 +37,9 @@ const CHUNK_SIZE = 50000;
  * @param metric to query to Grafana
  * @returns { values: [time, value][], columns: string[] }
  */
-export async function queryByMetric(
+export async function * query(
   metric: Metric, url: string, from: number, to: number, apiKey: string
-): Promise<{ values: [number, number][], columns: string[] }> {
+): AsyncIterableIterator<TimeSeriesPoint> {
 
   if(from > to) {
     throw new BadRange(
@@ -43,25 +54,39 @@ export async function queryByMetric(
   }
 
   const grafanaUrl = getGrafanaUrl(url);
-
-  let data = {
-    values: [],
-    columns: []
-  };
+  let responseLength = 0;
 
   while(true) {
-    let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
+    let query = metric.metricQuery.getQuery(from, to, CHUNK_SIZE, responseLength);
     query.url = `${grafanaUrl}/${query.url}`;
     let res = await queryGrafana(query, apiKey, metric.datasource);
-    let chunk = metric.metricQuery.getResults(res);
-    let values = chunk.values;
-    data.values = data.values.concat(values);
-    data.columns = chunk.columns;
+    const chunk = metric.metricQuery.getResults(res);
+    responseLength += chunk.values.length;
 
-    if(values.length < CHUNK_SIZE) {
+    for(const values of chunk.values) {
+      yield {
+        columns: chunk.columns,
+        values
+      };
+    };
+
+    if(responseLength < CHUNK_SIZE) {
       // because if we get less that we could, then there is nothing more
-      break;
+      return;
     }
+  }
+}
+
+export async function queryByMetric(
+  metric: Metric, url: string, from: number, to: number, apiKey: string
+): Promise<TimeSeries> {
+  let data: TimeSeries = {
+    columns: [],
+    values: []
+  };
+  for await(const point of query(metric, url, from, to, apiKey)) {
+    data.columns = point.columns
+    data.values = data.values.concat(point.values)
   }
   return data;
 }
