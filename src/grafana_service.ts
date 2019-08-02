@@ -33,10 +33,6 @@ export class DatasourceUnavailable extends DataKitError {};
 const CHUNK_SIZE = 50000;
 
 
-/**
- * @param metric to query to Grafana
- * @returns { values: [time, value][], columns: string[] }
- */
 export async function * query(
   metric: Metric, url: string, from: number, to: number, apiKey: string
 ): AsyncIterableIterator<TimeSeriesPoint> {
@@ -77,6 +73,10 @@ export async function * query(
   }
 }
 
+/**
+ * @param metric to query to Grafana
+ * @returns { values: [time, value][], columns: string[] }
+ */
 export async function queryByMetric(
   metric: Metric, url: string, from: number, to: number, apiKey: string
 ): Promise<TimeSeries> {
