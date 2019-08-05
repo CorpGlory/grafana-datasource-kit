@@ -55,23 +55,27 @@ export class DatasourceRequest {
 
     const grafanaUrl = this.getGrafanaUrl(this.url);
 
-    let currentQueryResult = new QueryResult();
+    let data = {
+      values: [],
+      columns: []
+    };
 
     while (true) {
-      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, currentQueryResult.getValuesLength());
+      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, data.values.length);
       query.url = `${grafanaUrl}/${query.url}`;
       let res = await queryGrafana(query, this.apiKey, this.metric.datasource);
       let chunk = this.metric.metricQuery.getResults(res);
       let values = chunk.values;
-      currentQueryResult.appendValues(values);
-      currentQueryResult.updateColumns(chunk.columns);
+      data.values = data.values.concat(values);
+      data.columns = chunk.columns;
 
       if (values.length < CHUNK_SIZE) {
         // because if we get less than we can, we can stop here
         break;
       }
     }
-    return currentQueryResult;
+    const queryResult = new QueryResult(data.values, data.columns);
+    return queryResult;
   }
 
   getGrafanaUrl(url: string): string {
@@ -176,17 +180,14 @@ export class QueryResult {
     public columns: string[] = []
   ) {};
 
-  public appendValues(values: [number, number][]) {
-    this.values.concat(values);
-  };
+  // public appendValues(values: [number, number][]) {
+  //   this.values.concat(values);
+  // };
 
-  public updateColumns(columns: string[]) {
-    this.columns = columns;
-  };
+  // public updateColumns(columns: string[]) {
+  //   this.columns = columns;
+  // };
 
-  public getValuesLength(): number {
-    return this.values.length;
-  }
   public toObject(): { values: [number, number][], columns: string[] } {
     return {
       values: this.values,
