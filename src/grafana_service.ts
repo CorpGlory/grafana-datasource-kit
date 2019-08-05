@@ -6,14 +6,15 @@ import axios from 'axios';
 import * as _ from 'lodash';
 
 
-export type TimeSeries = {
-  columns: string[],
-  values: [number, number][]
-}
 
 export type TimeSeriesPoint = {
   columns: string[],
-  values: [number, number][]
+  values: [number, ...number[]][]
+}
+
+export type TimeSeries = {
+  columns: string[],
+  values: TimeSeriesPoint[]
 }
 
 export class DataKitError extends Error {
