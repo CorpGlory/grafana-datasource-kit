@@ -4,7 +4,7 @@ import { MetricQuery, Datasource } from './metrics/metric';
 import { URL } from 'url';
 import axios from 'axios';
 import * as _ from 'lodash';
-import { Stream, Readable } from 'stream';
+import { Readable } from 'stream';
 
 export class DataKitError extends Error {
   constructor(
@@ -49,16 +49,8 @@ export class DatasourceStream {
     this.grafanaUrl = getGrafanaUrl(url);
   };
 
-  public query(from: number, to: number) {
-    const data = this._query(from, to);
-    let resultStream = new Readable({
-      read(size: number) {
+  public async query(from: number, to: number): Promise<Readable> {
 
-      }
-    });
-  }
-
-  private async * _query(from: number, to: number): AsyncIterableIterator<TimeSeriesChunk> {
     if(from > to) {
       throw new BadRange(
         `Data-kit got wrong range: from ${from} > to ${to}`,
@@ -71,13 +63,31 @@ export class DatasourceStream {
       console.warn(`Data-kit got from === to`);
     }
 
+    const data = this._query(from, to);
+    const read = async (self: Readable, size: number) => {
+      if(this.currentChunk.length < size) {
+        let chunk = (await data.next()).value;
+        for(const value of chunk.values) {
+          this.currentChunk.concat(new TimeSeriesPoint(chunk.columns, chunk.values));
+        }
+      }
+
+      for(let i = 0; i < size; i++) {
+        self.push(this.currentChunk.shift());
+      }
+    }
+
+    return new Readable({read});
+  }
+
+  private async * _query(from: number, to: number): AsyncIterableIterator<TimeSeriesChunk> {
     let returnedValuesLength = 0;
     while(true) {
       let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, returnedValuesLength);
       query.url = `${this.grafanaUrl}/${query.url}`;
       let res = await queryGrafana(query, this.apiKey, this.metric.datasource);
       let chunk = this.metric.metricQuery.getResults(res);
-      yield chunk;
+      yield new TimeSeriesChunk(chunk.columns, chunk.values);
 
       if(chunk.values.length < CHUNK_SIZE) {
         // because if we get less that we could, then there is nothing more
@@ -95,7 +105,7 @@ export class DatasourceStream {
  */
 export async function queryByMetric(
   metric: Metric, url: string, from: number, to: number, apiKey: string
-): Promise<TimeSeriesChunk> {
+): Promise<{ values: [number, number][], columns: string[] }> {
 
   if(from > to) {
     throw new BadRange(
