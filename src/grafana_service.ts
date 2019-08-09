@@ -4,6 +4,7 @@ import { MetricQuery, Datasource } from './metrics/metric';
 import { URL } from 'url';
 import axios from 'axios';
 import * as _ from 'lodash';
+import { Stream, Readable } from 'stream';
 
 export class DataKitError extends Error {
   constructor(
@@ -21,6 +22,72 @@ export class DatasourceUnavailable extends DataKitError {};
 
 const CHUNK_SIZE = 50000;
 
+export class TimeSeriesPoint {
+  constructor(
+    public columns: string[],
+    public values: number[]
+  ){}
+}
+
+export class TimeSeriesChunk {
+  constructor(
+    public columns: string[],
+    public values: number[]
+  ){}
+}
+
+export class DatasourceStream {
+
+  private currentChunk: TimeSeriesPoint[] = [];
+  private grafanaUrl;
+
+  constructor(
+    public metric: Metric,
+    public url: string,
+    public apiKey: string
+  ) {
+    this.grafanaUrl = getGrafanaUrl(url);
+  };
+
+  public query(from: number, to: number) {
+    const data = this._query(from, to);
+    let resultStream = new Readable({
+      read(size: number) {
+
+      }
+    });
+  }
+
+  private async * _query(from: number, to: number): AsyncIterableIterator<TimeSeriesChunk> {
+    if(from > to) {
+      throw new BadRange(
+        `Data-kit got wrong range: from ${from} > to ${to}`,
+        this.metric.datasource.type,
+        this.url
+      );
+    }
+
+    if(from === to) {
+      console.warn(`Data-kit got from === to`);
+    }
+
+    let returnedValuesLength = 0;
+    while(true) {
+      let query = this.metric.metricQuery.getQuery(from, to, CHUNK_SIZE, returnedValuesLength);
+      query.url = `${this.grafanaUrl}/${query.url}`;
+      let res = await queryGrafana(query, this.apiKey, this.metric.datasource);
+      let chunk = this.metric.metricQuery.getResults(res);
+      yield chunk;
+
+      if(chunk.values.length < CHUNK_SIZE) {
+        // because if we get less that we could, then there is nothing more
+        break;
+      }
+    }
+    return;
+  }
+}
+
 
 /**
  * @param metric to query to Grafana
@@ -28,7 +95,7 @@ const CHUNK_SIZE = 50000;
  */
 export async function queryByMetric(
   metric: Metric, url: string, from: number, to: number, apiKey: string
-): Promise<{ values: [number, number][], columns: string[] }> {
+): Promise<TimeSeriesChunk> {
 
   if(from > to) {
     throw new BadRange(
