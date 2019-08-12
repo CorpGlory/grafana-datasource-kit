@@ -49,7 +49,7 @@ export class DatasourceStream {
     this.grafanaUrl = getGrafanaUrl(url);
   };
 
-  public async query(from: number, to: number): Promise<Readable> {
+  public query(from: number, to: number): Readable {
 
     if(from > to) {
       throw new BadRange(
@@ -64,9 +64,9 @@ export class DatasourceStream {
     }
 
     const data = this._query(from, to);
-    const read = async (self: Readable, size: number) => {
+    const read = (self: Readable, size: number) => {
       if(this.currentChunk.length < size) {
-        let chunk = (await data.next()).value;
+        let chunk = Promise.all([data.next()]).value;
         for(const value of chunk.values) {
           this.currentChunk.concat(new TimeSeriesPoint(chunk.columns, chunk.values));
         }
@@ -77,7 +77,7 @@ export class DatasourceStream {
       }
     }
 
-    return new Readable({read});
+    return new ReadableStream({ read });
   }
 
   private async * _query(from: number, to: number): AsyncIterableIterator<TimeSeriesChunk> {
