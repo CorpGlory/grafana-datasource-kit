@@ -1,3 +1,5 @@
+# THIS PROJECT IS A PART OF [CorpGlory/tsdb-kit](https://github.com/CorpGlory/tsdb-kit) NOW
+
 # grafana-datasource-kit
 
 [![Build Status](https://travis-ci.org/CorpGlory/grafana-datasource-kit.svg?branch=master)](https://travis-ci.org/CorpGlory/grafana-datasource-kit)
