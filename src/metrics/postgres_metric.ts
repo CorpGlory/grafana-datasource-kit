@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 export class PostgresMetric extends AbstractMetric {
 
   private _targetName: string; //save first target name, while multi metric not implemented
+  private url: string = 'api/tsdb/query';
 
   constructor(datasource: Datasource, targets: any[], id?: MetricId) {
     super(datasource, targets, id);
@@ -22,9 +23,13 @@ export class PostgresMetric extends AbstractMetric {
 
     _.forEach(queries, q => {
       q.rawSql = processSQLLimitOffset(q.rawSql, limit, offset);
+      if (!q.datasourceId) {
+        q.datasourceId = this.datasource.datasourceId;
+      }
     });
+
     return {
-      url: this.datasource.url,
+      url: this.url,
       method: 'POST',
       schema: {
         data: {
@@ -49,7 +54,7 @@ export class PostgresMetric extends AbstractMetric {
 
     // TODO: support more than 1 metric (each res.data.results item is a metric)
     let results = res.data.results[this._targetName];
-    if (results.series === undefined) {
+    if (!results.series) {
       return emptyResult;
     }
 
