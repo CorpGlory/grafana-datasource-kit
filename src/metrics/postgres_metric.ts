@@ -1,4 +1,4 @@
-import {SqlMetric} from "./sql_metric";
+import { SqlMetric } from './sql_metric';
 
 export class PostgresMetric extends SqlMetric {
 
