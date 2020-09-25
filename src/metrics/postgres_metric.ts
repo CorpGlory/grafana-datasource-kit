@@ -18,7 +18,8 @@ export class PostgresMetric extends AbstractMetric {
   }
 
   getQuery(from: number, to: number, limit: number, offset: number): MetricQuery {
-    let queries = this.datasource.data.queries;
+    let queries = this.targets;
+
     _.forEach(queries, q => {
       q.rawSql = processSQLLimitOffset(q.rawSql, limit, offset);
     });
