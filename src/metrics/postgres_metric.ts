@@ -23,7 +23,7 @@ export class PostgresMetric extends AbstractMetric {
 
     _.forEach(queries, q => {
       q.rawSql = processSQLLimitOffset(q.rawSql, limit, offset);
-      if (!q.datasourceId) {
+      if(!q.datasourceId) {
         q.datasourceId = this.datasource.datasourceId;
       }
     });
@@ -54,7 +54,7 @@ export class PostgresMetric extends AbstractMetric {
 
     // TODO: support more than 1 metric (each res.data.results item is a metric)
     let results = res.data.results[this._targetName];
-    if (!results.series) {
+    if(!results.series) {
       return emptyResult;
     }
 
